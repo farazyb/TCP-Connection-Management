@@ -1,20 +1,19 @@
 package ir.co.ocs;
 
 import ir.co.ocs.Envoriment.Server;
+import ir.co.ocs.Handlers.TimeServerHandler;
 import ir.co.ocs.codec.FixedLengthByteArrayFactory;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
 
 
     public static void main(String[] args) {
-        Server server = new Server("Test");
+        ChannelInformation channelInformation = new ChannelInformation();
+        Server server = new Server(channelInformation);
         server.create();
         server.addFilter("logging", new LoggingFilter());
         server.addFilter("codec", new ProtocolCodecFilter(new FixedLengthByteArrayFactory()));

@@ -1,17 +1,14 @@
 package ir.co.ocs.Envoriment;
 
-import ir.co.ocs.FilterChain;
+import ir.co.ocs.ChannelInformation;
+import ir.co.ocs.Handlers.NetWorkChannelHandler;
 import org.apache.mina.core.filterchain.IoFilter;
 import org.apache.mina.core.service.IoAcceptor;
-import org.apache.mina.core.service.IoHandler;
-import org.apache.mina.filter.errorgenerating.ErrorGeneratingFilter;
-import org.apache.mina.filter.firewall.BlacklistFilter;
 import org.apache.mina.transport.socket.DefaultSocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 
 public class Server implements NetworkChannel {
@@ -19,39 +16,32 @@ public class Server implements NetworkChannel {
     private int port;
     private CountDownLatch latch;
     private Thread serverThread;
-    private String name;
+    private ChannelInformation channelInformation;
 
-    public Server(String name) {
-        this.name = name;
+    public Server(ChannelInformation channelInformation) {
+        this.channelInformation = channelInformation;
     }
 
     public void create() {
         server = new NioSocketAcceptor();
-        DefaultSocketSessionConfig defaultSocketSessionConfig=new DefaultSocketSessionConfig();
+        DefaultSocketSessionConfig defaultSocketSessionConfig = new DefaultSocketSessionConfig();
         defaultSocketSessionConfig.setKeepAlive(true);
-
         server.getSessionConfig().setAll(defaultSocketSessionConfig);
-//        ErrorGeneratingFilter egf = new ErrorGeneratingFilter();
-//        egf.setChangeByteProbability(200);
-//        egf.setInsertByteProbability(200);
-//        egf.setRemoveByteProbability(200);
-//        egf.setManipulateReads(true);
-//        egf.setManipulateWrites(true);
-//        server.getFilterChain().addLast("errorGenerator", egf);;
 
+    }
+
+    @Override
+    public void addProcessor() {
+        
     }
 
     public void addFilter(String name, IoFilter filterChain) {
 
         server.getFilterChain().addLast(name, filterChain);
     }
-    public void addFilter(String name, FilterChain filterChain) {
 
-        filterChain.setName(name);
-        server.getFilterChain().addLast(name, filterChain);
-    }
-
-    public void setHandler(IoHandler handler) {
+    public void setHandler(NetWorkChannelHandler handler) {
+        handler.setChannelInformation(channelInformation);
         server.setHandler(handler);
     }
 

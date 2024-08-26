@@ -61,7 +61,7 @@ public class TcpClient {
 
                         String responseMessage = new String(responseBytes, StandardCharsets.UTF_8);
                         System.out.println("Received response from the server: " + responseMessage);
-                       TimeUnit.SECONDS.sleep(1);
+                       TimeUnit.SECONDS.sleep(500);
                     } while (true);
                 } catch (Exception e) {
                     e.printStackTrace();

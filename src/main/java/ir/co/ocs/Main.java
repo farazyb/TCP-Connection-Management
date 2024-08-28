@@ -21,8 +21,6 @@ public class Main {
         server.start(8080);
         try {
             TimeUnit.SECONDS.sleep(10);
-            // server.stop();
-//            serverFuture.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }

@@ -1,6 +1,7 @@
 package ir.co.ocs.Handlers;
 
 import ir.co.ocs.ChannelInformation;
+import lombok.extern.log4j.Log4j;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -10,23 +11,35 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
 
-public abstract class NetWorkChannelHandler extends IoHandlerAdapter {
-    private final Logger logger;
+@Log4j
+public abstract class NetworkChannelHandler extends IoHandlerAdapter {
+
+
     private ChannelInformation channelInformation;
+    private HashMap<Object, Object> channelAttribute;
 
-    public NetWorkChannelHandler() {
-        logger = LoggerFactory.getLogger(this.getClass().getName());
-    }
 
     public void setChannelInformation(ChannelInformation channelInformation) {
         this.channelInformation = channelInformation;
     }
 
+    public void setChannelAttribute(HashMap<Object, Object> channelAttribute) {
+        this.channelAttribute = channelAttribute;
+    }
+
     @Override
     public final void sessionCreated(IoSession session) throws Exception {
-        logger.info(" ECHO THREAD : {}", Thread.currentThread().getName());
-        session.setAttribute("Channel", this.channelInformation);
+        log.info(" ECHO THREAD : {" + Thread.currentThread().getName() + "}");
+        log.info("adding channel attribute");
+        addChannelAttribute(session);
+    }
+
+    private void addChannelAttribute(IoSession session) {
+        if (!channelAttribute.isEmpty()) {
+            channelAttribute.forEach(session::setAttribute);
+        }
     }
 
     @Override
@@ -55,11 +68,11 @@ public abstract class NetWorkChannelHandler extends IoHandlerAdapter {
 
     @Override
     public void exceptionCaught(IoSession session, Throwable cause) throws Exception {
-        super.exceptionCaught(session, cause);
+        cause.printStackTrace();
     }
 
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
-        logger.info("Message : {} wrote for Session : {}", message, session.getLocalAddress());
+        log.info("Message : {"+message+"} wrote for Session : {"+session.getLocalAddress()+"}" );
     }
 }

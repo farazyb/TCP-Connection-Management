@@ -1,5 +1,5 @@
-package ir.co.ocs.Envoriment;
+package ir.co.ocs.envoriment;
 
 public interface SSL {
-    void addSSL(String keystore,String password);
+    void addSSL(String keystorePath,String password);
 }

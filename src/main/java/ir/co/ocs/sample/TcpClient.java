@@ -11,14 +11,13 @@ public class TcpClient {
     public static void main(String[] args) {
         String host = "localhost";  // Replace with the server's IP address or hostname
         int port = 8080;  // Replace with the server's port
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 3; i++) {
 
 
             new Thread(() -> {
-                try (Socket socket = new Socket(host, port)) {
-                    TimeUnit.SECONDS.sleep(20);
-
-                    do {
+                do {
+                    try (Socket socket = new Socket(host, port)) {
+                        //  TimeUnit.SECONDS.sleep(10);
 
 
                         OutputStream outputStream = socket.getOutputStream();
@@ -61,11 +60,12 @@ public class TcpClient {
 
                         String responseMessage = new String(responseBytes, StandardCharsets.UTF_8);
                         System.out.println("Received response from the server: " + responseMessage);
-                       TimeUnit.SECONDS.sleep(500);
-                    } while (true);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                        TimeUnit.MILLISECONDS.sleep(500);
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } while (true);
             }).start();
         }
     }

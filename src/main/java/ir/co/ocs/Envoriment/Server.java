@@ -1,14 +1,13 @@
-package ir.co.ocs.Envoriment;
+package ir.co.ocs.envoriment;
 
 import ir.co.ocs.ChannelInformation;
-import ir.co.ocs.Handlers.NetWorkChannelHandler;
-import org.apache.mina.core.IoUtil;
+import ir.co.ocs.Handlers.NetworkChannelHandler;
+import ir.co.ocs.filters.SessionStatisticsFilter;
+import ir.co.ocs.socketconfiguration.DefaultTcpSocketConfiguration;
+import lombok.extern.log4j.Log4j;
 import org.apache.mina.core.filterchain.IoFilter;
 import org.apache.mina.core.service.IoAcceptor;
-import org.apache.mina.core.session.IoSession;
-import org.apache.mina.filter.keepalive.KeepAliveFilter;
-import org.apache.mina.filter.keepalive.KeepAliveMessageFactory;
-import org.apache.mina.filter.ssl.SslFilter;
+import org.apache.mina.core.service.IoService;
 import org.apache.mina.transport.socket.DefaultSocketSessionConfig;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
@@ -16,23 +15,22 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.CountDownLatch;
 
-public class Server implements NetworkChannel {
-    private IoAcceptor server;
+@Log4j
+public class Server extends AbstractNetworkChannel {
+    private NioSocketAcceptor acceptor;
     private int port;
     private CountDownLatch latch;
     private Thread serverThread;
-    private ChannelInformation channelInformation;
+    private final ChannelInformation channelInformation;
 
     public Server(ChannelInformation channelInformation) {
+        super();
         this.channelInformation = channelInformation;
     }
 
-    public void create() {
-        server = new NioSocketAcceptor();
-        DefaultSocketSessionConfig defaultSocketSessionConfig = new DefaultSocketSessionConfig();
-        defaultSocketSessionConfig.setKeepAlive(true);
-        server.getSessionConfig().setAll(defaultSocketSessionConfig);
-
+    @Override
+    public IoService create() {
+        return new NioSocketAcceptor();
     }
 
     @Override
@@ -40,18 +38,25 @@ public class Server implements NetworkChannel {
 
     }
 
-    public void addFilter(String name, IoFilter filterChain) {
-
-        server.getFilterChain().addLast(name, filterChain);
+    @Override
+    public void setConfig(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration) {
+        setDefaultTcpSocketConfiguration(defaultTcpSocketConfiguration);
+        acceptor.getSessionConfig().setAll(defaultTcpSocketConfiguration);
     }
 
-    public void setHandler(NetWorkChannelHandler handler) {
+    public void addFilter(String name, IoFilter filterChain) {
+
+        acceptor.getFilterChain().addLast(name, filterChain);
+    }
+
+    public void setHandler(NetworkChannelHandler handler) {
         handler.setChannelInformation(channelInformation);
-        server.setHandler(handler);
+        handler.setChannelAttribute(defaultTcpSocketConfiguration.getChannelAttribute());
+        acceptor.setHandler(handler);
     }
 
     private void bind(int port) throws IOException {
-        server.bind(new InetSocketAddress(port));
+        acceptor.bind(new InetSocketAddress(port));
     }
 
     @Override
@@ -84,12 +89,12 @@ public class Server implements NetworkChannel {
                 bind(port);
                 latch.await(); // Wait indefinitely until the latch is counted down
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // Restore interrupted status
             } finally {
-                server.unbind(); // Unbind the server
-                server.dispose(); // Clean up resources when the server stops
+                acceptor.unbind(); // Unbind the server
+                acceptor.dispose(); // Clean up resources when the server stops
             }
         });
 

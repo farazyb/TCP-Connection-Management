@@ -1,6 +1,6 @@
 package ir.co.ocs;
 
-import ir.co.ocs.Envoriment.Server;
+import ir.co.ocs.envoriment.Server;
 import ir.co.ocs.Handlers.TimeServerHandler;
 import ir.co.ocs.codec.FixedLengthByteArrayFactory;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
@@ -12,7 +12,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-        ChannelInformation channelInformation = new ChannelInformation();
+        ChannelInformation channelInformation = new ChannelInformation("Test",true);
         Server server = new Server(channelInformation);
         server.create();
         server.addFilter("logging", new LoggingFilter());
@@ -22,7 +22,7 @@ public class Main {
         try {
             TimeUnit.SECONDS.sleep(10);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 }

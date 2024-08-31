@@ -8,7 +8,7 @@ import org.apache.mina.core.service.IoService;
 public interface NetworkChannel {
     public IoService create();
 
-    public NetworkChannel start(int port);
+    public NetworkChannel start();
 
     public NetworkChannel stop();
 
@@ -21,5 +21,7 @@ public interface NetworkChannel {
     public void addProcessor();
 
     public void setConfig(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration);
+
+    public void setDefaultHandler(IoService ioService);
 
 }

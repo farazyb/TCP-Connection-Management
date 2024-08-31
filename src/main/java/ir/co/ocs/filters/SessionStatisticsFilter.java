@@ -18,11 +18,20 @@ public class SessionStatisticsFilter extends IoFilterAdapter {
     private final AtomicInteger messagesWritten = new AtomicInteger();
     private final AtomicLong idleReadTime = new AtomicLong();
     private final AtomicLong idleWriteTime = new AtomicLong();
+    private final AtomicLong openedSessionInTotal = new AtomicLong();
+    private final AtomicLong openedSessionInInterval = new AtomicLong();
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public SessionStatisticsFilter() {
         scheduler.scheduleAtFixedRate(this::logStatistics, 1, 10, TimeUnit.SECONDS);
+    }
+
+    @Override
+    public void sessionOpened(NextFilter nextFilter, IoSession session) throws Exception {
+        openedSessionInTotal.incrementAndGet();
+        openedSessionInInterval.incrementAndGet();
+        super.sessionOpened(nextFilter, session);
     }
 
     @Override
@@ -33,6 +42,7 @@ public class SessionStatisticsFilter extends IoFilterAdapter {
 
     @Override
     public void messageSent(NextFilter nextFilter, IoSession session, WriteRequest writeRequest) throws Exception {
+
         messagesWritten.incrementAndGet();
         super.messageSent(nextFilter, session, writeRequest);
     }
@@ -47,7 +57,14 @@ public class SessionStatisticsFilter extends IoFilterAdapter {
         super.sessionIdle(nextFilter, session, status);
     }
 
+    @Override
+    public void exceptionCaught(NextFilter nextFilter, IoSession session, Throwable cause) throws Exception {
+        super.exceptionCaught(nextFilter, session, cause);
+    }
+
     private void logStatistics() {
+        log.info("Opened Session InTotal: " + openedSessionInTotal.get());
+        log.info("Opened Session in Interval: " + openedSessionInInterval.getAndSet(0));
         log.info("Messages Read: " + messagesRead.getAndSet(0));
         log.info("Messages Written: " + messagesWritten.getAndSet(0));
         log.info("Idle Read Time (ms): " + idleReadTime.getAndSet(0));

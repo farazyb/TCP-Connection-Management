@@ -37,7 +37,7 @@ public abstract class NetworkChannelHandler extends IoHandlerAdapter {
     }
 
     private void addChannelAttribute(IoSession session) {
-        if (!channelAttribute.isEmpty()) {
+        if (channelAttribute != null && !channelAttribute.isEmpty()) {
             channelAttribute.forEach(session::setAttribute);
         }
     }
@@ -73,6 +73,6 @@ public abstract class NetworkChannelHandler extends IoHandlerAdapter {
 
     @Override
     public void messageSent(IoSession session, Object message) throws Exception {
-        log.info("Message : {"+message+"} wrote for Session : {"+session.getLocalAddress()+"}" );
+        log.info("Message : {" + message + "} wrote for Session : {" + session.getLocalAddress() + "}");
     }
 }

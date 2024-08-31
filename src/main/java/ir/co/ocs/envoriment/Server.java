@@ -17,15 +17,18 @@ import java.util.concurrent.CountDownLatch;
 
 @Log4j
 public class Server extends AbstractNetworkChannel {
-    private NioSocketAcceptor acceptor;
+    private final NioSocketAcceptor acceptor;
     private int port;
     private CountDownLatch latch;
     private Thread serverThread;
     private final ChannelInformation channelInformation;
 
-    public Server(ChannelInformation channelInformation) {
-        super();
+    public Server(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration, ChannelInformation channelInformation, IoService acceptor) {
+        super(defaultTcpSocketConfiguration);
         this.channelInformation = channelInformation;
+        this.acceptor = (NioSocketAcceptor) acceptor;
+        this.port = getDefaultTcpSocketConfiguration().getPort();
+        setDefaultHandler(acceptor);
     }
 
     @Override
@@ -51,18 +54,18 @@ public class Server extends AbstractNetworkChannel {
 
     public void setHandler(NetworkChannelHandler handler) {
         handler.setChannelInformation(channelInformation);
-        handler.setChannelAttribute(defaultTcpSocketConfiguration.getChannelAttribute());
+        handler.setChannelAttribute(getDefaultTcpSocketConfiguration().getChannelAttribute());
         acceptor.setHandler(handler);
     }
 
-    private void bind(int port) throws IOException {
+    private void bind() throws IOException {
         acceptor.bind(new InetSocketAddress(port));
     }
 
     @Override
     public NetworkChannel restart() {
         stop();
-        start(this.port);
+        start();
         return this;
     }
 
@@ -80,13 +83,12 @@ public class Server extends AbstractNetworkChannel {
     }
 
     @Override
-    public NetworkChannel start(int port) {
-        this.port = port;
+    public NetworkChannel start() {
         latch = new CountDownLatch(1); // Initialize the latch
 
         serverThread = new Thread(() -> {
             try {
-                bind(port);
+                bind();
                 latch.await(); // Wait indefinitely until the latch is counted down
             } catch (IOException e) {
                 e.printStackTrace();

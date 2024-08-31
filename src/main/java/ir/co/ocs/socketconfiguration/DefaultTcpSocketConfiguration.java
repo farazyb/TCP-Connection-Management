@@ -3,6 +3,7 @@ package ir.co.ocs.socketconfiguration;
 import ir.co.ocs.Processor;
 import ir.co.ocs.messageprotocol.ProtocolMessageFactory;
 import ir.co.ocs.socketconfiguration.enums.SocketMode;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
@@ -58,6 +59,7 @@ import java.util.HashMap;
  */
 @Getter
 @Builder
+@AllArgsConstructor
 public class DefaultTcpSocketConfiguration extends DefaultSocketSessionConfig {
     private String channelIdentificationName;
     private int port;

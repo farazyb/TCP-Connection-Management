@@ -57,9 +57,6 @@ import java.util.HashMap;
  *
  * @see DefaultSocketSessionConfig
  */
-@Getter
-@Builder
-@AllArgsConstructor
 public class DefaultTcpSocketConfiguration extends DefaultSocketSessionConfig {
     private String channelIdentificationName;
     private int port;
@@ -85,5 +82,117 @@ public class DefaultTcpSocketConfiguration extends DefaultSocketSessionConfig {
         this.permanent = true;
         this.ssl = false;
         channelAttribute=new HashMap<>();
+    }
+
+    public String getChannelIdentificationName() {
+        return channelIdentificationName;
+    }
+
+    public void setChannelIdentificationName(String channelIdentificationName) {
+        this.channelIdentificationName = channelIdentificationName;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public boolean isSsl() {
+        return ssl;
+    }
+
+    public void setSsl(boolean ssl) {
+        this.ssl = ssl;
+    }
+
+    public String getKeyStorePath() {
+        return keyStorePath;
+    }
+
+    public void setKeyStorePath(String keyStorePath) {
+        this.keyStorePath = keyStorePath;
+    }
+
+    public String getTrustStorePath() {
+        return trustStorePath;
+    }
+
+    public void setTrustStorePath(String trustStorePath) {
+        this.trustStorePath = trustStorePath;
+    }
+
+    public String getKeyStorePassword() {
+        return keyStorePassword;
+    }
+
+    public void setKeyStorePassword(String keyStorePassword) {
+        this.keyStorePassword = keyStorePassword;
+    }
+
+    public String getTrustStorePassword() {
+        return trustStorePassword;
+    }
+
+    public void setTrustStorePassword(String trustStorePassword) {
+        this.trustStorePassword = trustStorePassword;
+    }
+
+    public HashMap<Object, Object> getChannelAttribute() {
+        return channelAttribute;
+    }
+
+    public void setChannelAttribute(HashMap<Object, Object> channelAttribute) {
+        this.channelAttribute = channelAttribute;
+    }
+
+    public ProtocolMessageFactory getProtocolMessageFactory() {
+        return protocolMessageFactory;
+    }
+
+    public void setProtocolMessageFactory(ProtocolMessageFactory protocolMessageFactory) {
+        this.protocolMessageFactory = protocolMessageFactory;
+    }
+
+    public ProtocolCodecFactory getProtocolCodecFactory() {
+        return protocolCodecFactory;
+    }
+
+    public void setProtocolCodecFactory(ProtocolCodecFactory protocolCodecFactory) {
+        this.protocolCodecFactory = protocolCodecFactory;
+    }
+
+    public Processor getProcessor() {
+        return processor;
+    }
+
+    public void setProcessor(Processor processor) {
+        this.processor = processor;
+    }
+
+    public boolean isPermanent() {
+        return permanent;
+    }
+
+    public void setPermanent(boolean permanent) {
+        this.permanent = permanent;
+    }
+
+    public boolean isHighPriority() {
+        return highPriority;
+    }
+
+    public void setHighPriority(boolean highPriority) {
+        this.highPriority = highPriority;
+    }
+
+    public SocketMode getSocketMode() {
+        return socketMode;
+    }
+
+    public void setSocketMode(SocketMode socketMode) {
+        this.socketMode = socketMode;
     }
 }

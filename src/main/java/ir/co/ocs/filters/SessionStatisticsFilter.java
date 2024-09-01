@@ -20,6 +20,7 @@ public class SessionStatisticsFilter extends IoFilterAdapter {
     private final AtomicLong idleWriteTime = new AtomicLong();
     private final AtomicLong openedSessionInTotal = new AtomicLong();
     private final AtomicLong openedSessionInInterval = new AtomicLong();
+    private final AtomicLong exceptionOccurredInTotal = new AtomicLong();
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -59,11 +60,14 @@ public class SessionStatisticsFilter extends IoFilterAdapter {
 
     @Override
     public void exceptionCaught(NextFilter nextFilter, IoSession session, Throwable cause) throws Exception {
+        log.error("Exception - >", cause);
+        this.exceptionOccurredInTotal.incrementAndGet();
         super.exceptionCaught(nextFilter, session, cause);
     }
 
     private void logStatistics() {
         log.info("Opened Session InTotal: " + openedSessionInTotal.get());
+        log.info("exception occured : " + exceptionOccurredInTotal.get());
         log.info("Opened Session in Interval: " + openedSessionInInterval.getAndSet(0));
         log.info("Messages Read: " + messagesRead.getAndSet(0));
         log.info("Messages Written: " + messagesWritten.getAndSet(0));

@@ -43,7 +43,7 @@ public class FixedLengthByteArrayDecoder extends CumulativeProtocolDecoder {
             } else {
                 // Not enough bytes available for the full message, reset the buffer
                 in.reset();
-                return false;
+                return  false;
             }
         }
 

@@ -16,10 +16,14 @@ public class Main {
 
     public static void main(String[] args) {
         ChannelInformation channelInformation = new ChannelInformation("Test", true);
-        DefaultTcpSocketConfiguration defaultTcpSocketConfiguration = DefaultTcpSocketConfiguration.builder().port(8080)
-                .socketMode(SocketMode.BOTH)
-                .permanent(true)
-                .build();
+        DefaultTcpSocketConfiguration defaultTcpSocketConfiguration = new DefaultTcpSocketConfiguration();
+        defaultTcpSocketConfiguration.setReuseAddress(true);
+       // defaultTcpSocketConfiguration.setSoLinger(1);
+        defaultTcpSocketConfiguration.setPort(8080);
+
+        if (defaultTcpSocketConfiguration == null) {
+            defaultTcpSocketConfiguration = new DefaultTcpSocketConfiguration();
+        }
 
         Server server = new Server(defaultTcpSocketConfiguration, channelInformation, new ServerFactory().createIoService());
         server.create();

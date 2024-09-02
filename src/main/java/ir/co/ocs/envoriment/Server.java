@@ -4,6 +4,7 @@ import ir.co.ocs.ChannelInformation;
 import ir.co.ocs.Handlers.NetworkChannelHandler;
 import ir.co.ocs.filters.SessionStatisticsFilter;
 import ir.co.ocs.socketconfiguration.DefaultTcpSocketConfiguration;
+import ir.co.ocs.socketconfiguration.SocketConfigurationHandler;
 import lombok.extern.log4j.Log4j;
 import org.apache.mina.core.filterchain.IoFilter;
 import org.apache.mina.core.service.IoAcceptor;
@@ -23,28 +24,32 @@ public class Server extends AbstractNetworkChannel {
     private Thread serverThread;
     private final ChannelInformation channelInformation;
 
-    public Server(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration, ChannelInformation channelInformation, IoService acceptor) {
-        super(defaultTcpSocketConfiguration);
+    public Server(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration
+            , ChannelInformation channelInformation
+            , IoService acceptor
+            , SocketConfigurationHandler socketConfigurationHandler) {
+        super(defaultTcpSocketConfiguration, socketConfigurationHandler);
+        this.channelInformation = channelInformation;
+        this.acceptor = (NioSocketAcceptor) acceptor;
+        this.port = getDefaultTcpSocketConfiguration().getPort();
+
+        setDefaultHandler(acceptor);
+    }
+
+    public Server(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration
+            , ChannelInformation channelInformation
+            , IoService acceptor) {
+        super(defaultTcpSocketConfiguration, new SocketConfigurationHandler());
         this.channelInformation = channelInformation;
         this.acceptor = (NioSocketAcceptor) acceptor;
         this.port = getDefaultTcpSocketConfiguration().getPort();
         setDefaultHandler(acceptor);
     }
 
-    @Override
-    public IoService create() {
-        return new NioSocketAcceptor();
-    }
 
     @Override
     public void addProcessor() {
 
-    }
-
-    @Override
-    public void setConfig(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration) {
-        setDefaultTcpSocketConfiguration(defaultTcpSocketConfiguration);
-        acceptor.getSessionConfig().setAll(defaultTcpSocketConfiguration);
     }
 
     public void addFilter(String name, IoFilter filterChain) {

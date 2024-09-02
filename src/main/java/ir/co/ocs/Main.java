@@ -26,7 +26,6 @@ public class Main {
         }
 
         Server server = new Server(defaultTcpSocketConfiguration, channelInformation, new ServerFactory().createIoService());
-        server.create();
 //        server.addFilter("logging", new LoggingFilter());
 //        server.addFilter("codec", new ProtocolCodecFilter(new FixedLengthByteArrayFactory()));
         server.setHandler(new TimeServerHandler());

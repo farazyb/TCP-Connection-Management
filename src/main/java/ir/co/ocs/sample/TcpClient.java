@@ -12,7 +12,7 @@ public class TcpClient {
     public static void main(String[] args) {
         String host = "localhost";  // Replace with the server's IP address or hostname
         int port = 8080;  // Replace with the server's port
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 20; i++) {
 
 
             new Thread(() -> {

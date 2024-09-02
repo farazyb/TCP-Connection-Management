@@ -6,6 +6,7 @@ import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.core.write.WriteRequest;
 
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,11 +26,21 @@ public class SessionStatisticsFilter extends IoFilterAdapter {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
     public SessionStatisticsFilter() {
+
         scheduler.scheduleAtFixedRate(this::logStatistics, 1, 10, TimeUnit.SECONDS);
+    }
+
+
+    @Override
+    public void sessionCreated(NextFilter nextFilter, IoSession session) throws Exception {
+
+        Thread.currentThread().setName(UUID.randomUUID().toString());
+        super.sessionCreated(nextFilter, session);
     }
 
     @Override
     public void sessionOpened(NextFilter nextFilter, IoSession session) throws Exception {
+
         openedSessionInTotal.incrementAndGet();
         openedSessionInInterval.incrementAndGet();
         super.sessionOpened(nextFilter, session);

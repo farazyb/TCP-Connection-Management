@@ -44,6 +44,7 @@ public class Server extends AbstractNetworkChannel {
         this.acceptor = (NioSocketAcceptor) acceptor;
         this.port = getDefaultTcpSocketConfiguration().getPort();
         setDefaultHandler(acceptor);
+        applyConfig(acceptor);
     }
 
 

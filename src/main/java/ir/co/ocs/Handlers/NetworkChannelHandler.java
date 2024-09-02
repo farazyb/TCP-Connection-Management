@@ -45,7 +45,8 @@ public abstract class NetworkChannelHandler extends IoHandlerAdapter {
     @Override
     public final void messageReceived(IoSession session, Object message) throws Exception {
 
-        String str = message.toString();
+        String str = new String((byte[])message);
+        log.info("Recived Message : "+str);
         if (str.trim().equalsIgnoreCase("quit")) {
             session.closeOnFlush();
             return;

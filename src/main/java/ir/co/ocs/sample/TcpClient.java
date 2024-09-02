@@ -5,13 +5,14 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 public class TcpClient {
     public static void main(String[] args) {
         String host = "localhost";  // Replace with the server's IP address or hostname
         int port = 8080;  // Replace with the server's port
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 1; i++) {
 
 
             new Thread(() -> {
@@ -19,7 +20,7 @@ public class TcpClient {
                     try (Socket socket = new Socket(host, port)) {
                         TimeUnit.MILLISECONDS.sleep(10);
                         socket.setReuseAddress(true);
-                        socket.setSoLinger(true,1);
+                        socket.setSoLinger(true, 1);
                         OutputStream outputStream = socket.getOutputStream();
                         InputStream inputStream = socket.getInputStream();
 
@@ -35,12 +36,20 @@ public class TcpClient {
                         ByteBuffer byteBuffer = ByteBuffer.allocate(lengthBytes.length + messageBytes.length);
                         byteBuffer.put(lengthBytes);
                         byteBuffer.put(messageBytes);
+                        byte[] fullMessage = byteBuffer.array();
 
+                        int fragmentSize = 2; // Size of each fragment
+                        for (int j = 0; j < fullMessage.length; j += fragmentSize) {
+                            byte[] fragment = Arrays.copyOfRange(fullMessage, j, Math.min(j + fragmentSize, fullMessage.length));
+                            // Send each fragment with a delay to simulate fragmentation
+                            System.out.println(new String(fragment));
+                            outputStream.write(fragment);
+                            outputStream.flush();
+                            // Optionally, add a delay between sending fragments
+                            Thread.sleep(50); // Adjust delay as necessary to simulate network conditions
+                        }
                         // Send the combined byte array
-                        outputStream.write(byteBuffer.array());
-                        outputStream.flush();
                         System.out.println("Message sent to the server.");
-
                         // Read the length prefix from the server's response
                         byte[] responseLengthBytes = new byte[4];
                         int bytesRead = inputStream.read(responseLengthBytes);
@@ -60,12 +69,12 @@ public class TcpClient {
 
                         String responseMessage = new String(responseBytes, StandardCharsets.UTF_8);
                         System.out.println("Received response from the server: " + responseMessage);
-                        if (socket != null && !socket.isClosed()){
+                        if (socket != null && !socket.isClosed()) {
                             socket.shutdownInput();
                             socket.shutdownOutput();
                             socket.close();
                         }
-                        TimeUnit.MILLISECONDS.sleep(500);
+                        TimeUnit.SECONDS.sleep(10);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -4,6 +4,7 @@ import ir.co.ocs.ChannelInformation;
 import ir.co.ocs.Handlers.NetworkChannelHandler;
 import ir.co.ocs.filters.SessionStatisticsFilter;
 import ir.co.ocs.socketconfiguration.DefaultTcpSocketConfiguration;
+import ir.co.ocs.socketconfiguration.SocketConfiguration;
 import ir.co.ocs.socketconfiguration.SocketConfigurationHandler;
 import lombok.extern.log4j.Log4j;
 import org.apache.mina.core.filterchain.IoFilter;
@@ -18,33 +19,15 @@ import java.util.concurrent.CountDownLatch;
 
 @Log4j
 public class Server extends AbstractNetworkChannel {
-    private final NioSocketAcceptor acceptor;
-    private int port;
-    private CountDownLatch latch;
-    private Thread serverThread;
-    private final ChannelInformation channelInformation;
+    private NioSocketAcceptor acceptor;
+    private ChannelInformation channelInformation;
 
-    public Server(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration
-            , ChannelInformation channelInformation
-            , IoService acceptor
-            , SocketConfigurationHandler socketConfigurationHandler) {
-        super(defaultTcpSocketConfiguration, socketConfigurationHandler);
-        this.channelInformation = channelInformation;
-        this.acceptor = (NioSocketAcceptor) acceptor;
-        this.port = getDefaultTcpSocketConfiguration().getPort();
-
-        setDefaultHandler(acceptor);
+    public Server(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration, ChannelInformation channelInformation, IoService acceptor, SocketConfiguration socketConfiguration) {
+        super(defaultTcpSocketConfiguration, channelInformation, acceptor, socketConfiguration);
     }
 
-    public Server(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration
-            , ChannelInformation channelInformation
-            , IoService acceptor) {
-        super(defaultTcpSocketConfiguration, new SocketConfigurationHandler());
-        this.channelInformation = channelInformation;
-        this.acceptor = (NioSocketAcceptor) acceptor;
-        this.port = getDefaultTcpSocketConfiguration().getPort();
-        setDefaultHandler(acceptor);
-        applyConfig(acceptor);
+    public Server(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration, ChannelInformation channelInformation, IoService acceptor) {
+        super(defaultTcpSocketConfiguration, channelInformation, acceptor);
     }
 
 
@@ -65,7 +48,7 @@ public class Server extends AbstractNetworkChannel {
     }
 
     private void bind() throws IOException {
-        acceptor.bind(new InetSocketAddress(port));
+        acceptor.bind(new InetSocketAddress(getDefaultTcpSocketConfiguration().getPort()));
     }
 
     @Override

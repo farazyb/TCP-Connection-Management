@@ -11,11 +11,13 @@ public class Client extends AbstractNetworkChannel {
 
     NioSocketConnector client;
 
+
     public Client(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration, SocketConfiguration socketConfiguration) {
         super(defaultTcpSocketConfiguration, socketConfiguration);
     }
 
-    public Client(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration) {
+    public Client(IoServiceFactory ioServiceFactory,
+            DefaultTcpSocketConfiguration defaultTcpSocketConfiguration) {
         super(defaultTcpSocketConfiguration, new SocketConfigurationHandler());
     }
 

@@ -12,7 +12,7 @@ public class TcpClient {
     public static void main(String[] args) {
         String host = "localhost";  // Replace with the server's IP address or hostname
         int port = 8080;  // Replace with the server's port
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 1000; i++) {
 
 
             new Thread(() -> {
@@ -46,7 +46,7 @@ public class TcpClient {
                             outputStream.write(fragment);
                             outputStream.flush();
                             // Optionally, add a delay between sending fragments
-                            Thread.sleep(50); // Adjust delay as necessary to simulate network conditions
+                            Thread.sleep(100); // Adjust delay as necessary to simulate network conditions
                         }
                         // Send the combined byte array
                         System.out.println("Message sent to the server.");
@@ -74,7 +74,7 @@ public class TcpClient {
                             socket.shutdownOutput();
                             socket.close();
                         }
-                        TimeUnit.SECONDS.sleep(10);
+                        //TimeUnit.SECONDS.sleep(10);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

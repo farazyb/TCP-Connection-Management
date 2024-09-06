@@ -69,19 +69,15 @@ public class DefaultTcpSocketConfiguration extends DefaultSocketSessionConfig {
     private ProtocolMessageFactory protocolMessageFactory;
     private ProtocolCodecFactory protocolCodecFactory;
     private Processor processor;
-    private boolean permanent;
-    private boolean highPriority;
-    private SocketMode socketMode;
+
 
     public DefaultTcpSocketConfiguration() {
         setBothIdleTime(2);
         setReaderIdleTime(2);
         setWriterIdleTime(2);
         setKeepAlive(true);
-        this.socketMode = SocketMode.BOTH;
-        this.permanent = true;
         this.ssl = false;
-        channelAttribute=new HashMap<>();
+        channelAttribute = new HashMap<>();
     }
 
     public String getChannelIdentificationName() {
@@ -172,27 +168,5 @@ public class DefaultTcpSocketConfiguration extends DefaultSocketSessionConfig {
         this.processor = processor;
     }
 
-    public boolean isPermanent() {
-        return permanent;
-    }
 
-    public void setPermanent(boolean permanent) {
-        this.permanent = permanent;
-    }
-
-    public boolean isHighPriority() {
-        return highPriority;
-    }
-
-    public void setHighPriority(boolean highPriority) {
-        this.highPriority = highPriority;
-    }
-
-    public SocketMode getSocketMode() {
-        return socketMode;
-    }
-
-    public void setSocketMode(SocketMode socketMode) {
-        this.socketMode = socketMode;
-    }
 }

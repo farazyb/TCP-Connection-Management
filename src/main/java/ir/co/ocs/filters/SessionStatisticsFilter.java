@@ -48,6 +48,7 @@ public class SessionStatisticsFilter extends IoFilterAdapter {
 
     @Override
     public void messageReceived(NextFilter nextFilter, IoSession session, Object message) throws Exception {
+        TimeUnit.SECONDS.sleep(10);
         messagesRead.incrementAndGet();
         super.messageReceived(nextFilter, session, message);
     }
@@ -88,7 +89,16 @@ public class SessionStatisticsFilter extends IoFilterAdapter {
 
     @Override
     public void destroy() throws Exception {
-        scheduler.shutdown();
+        System.out.println("It Is called");
+        scheduler.shutdown();  // Initiates an orderly shutdown
+        try {
+            if (!scheduler.awaitTermination(60, TimeUnit.SECONDS)) {
+                scheduler.shutdownNow();  // Force shutdown if not completed in 60 seconds
+            }
+        } catch (InterruptedException e) {
+            scheduler.shutdownNow();  // Force shutdown on interruption
+            Thread.currentThread().interrupt();
+        }
         super.destroy();
     }
 }

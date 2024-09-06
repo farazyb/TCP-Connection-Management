@@ -6,8 +6,6 @@ import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.FilterEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -44,9 +42,8 @@ public abstract class NetworkChannelHandler extends IoHandlerAdapter {
 
     @Override
     public final void messageReceived(IoSession session, Object message) throws Exception {
-
-        String str = new String((byte[])message);
-        log.info("Recived Message : "+str);
+        String str = new String((byte[]) message);
+        log.info("Recived Message : " + str);
         if (str.trim().equalsIgnoreCase("quit")) {
             session.closeOnFlush();
             return;

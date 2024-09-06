@@ -1,13 +1,13 @@
-package ir.co.ocs.envoriment;
+package ir.co.ocs.envoriment.server;
 
-import org.apache.mina.core.service.IoService;
+import ir.co.ocs.envoriment.ioservicefactory.IoServiceFactory;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
 
 public class ServerFactory implements IoServiceFactory {
 
     @Override
-    public IoService createIoService() {
+    public NioSocketAcceptor createServer() {
         return new NioSocketAcceptor();
     }
 }

@@ -2,11 +2,9 @@ package ir.co.ocs.socketconfiguration;
 
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.service.IoConnector;
-import org.apache.mina.core.service.IoService;
 import org.apache.mina.core.session.IoSessionConfig;
-import org.apache.mina.transport.socket.SocketSessionConfig;
 
-public class SocketConfigurationHandler implements SocketConfiguration {
+public class SocketConfigurationHandler implements SocketConfigurationInterface {
 
 
     public void applyConfig(IoAcceptor acceptor, DefaultTcpSocketConfiguration config) {

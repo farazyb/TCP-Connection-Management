@@ -4,8 +4,9 @@ package ir.co.ocs.envoriment.client;
 import ir.co.ocs.envoriment.networkchannel.AbstractNetworkChannel;
 import ir.co.ocs.envoriment.networkchannel.NetworkChannel;
 import ir.co.ocs.socketconfiguration.ClientSocketConfiguration;
-import ir.co.ocs.socketconfiguration.SocketConfiguration;
+import ir.co.ocs.socketconfiguration.SocketConfigurationInterface;
 import ir.co.ocs.statistics.Statistics;
+import lombok.Getter;
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IoSession;
@@ -13,15 +14,16 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 import java.net.InetSocketAddress;
 
+@Getter
 public class Client extends AbstractNetworkChannel {
     private ConnectFuture future;
     private IoSession session;
 
-    protected Client(ClientSocketConfiguration clientSocketConfiguration, NioSocketConnector connector, SocketConfiguration socketConfiguration, Statistics statistics) {
+    public Client(ClientSocketConfiguration clientSocketConfiguration, NioSocketConnector connector, SocketConfigurationInterface socketConfiguration, Statistics statistics) {
         super(clientSocketConfiguration, connector, socketConfiguration, statistics);
     }
 
-    protected Client(ClientSocketConfiguration clientSocketConfiguration, NioSocketConnector connector) {
+    public Client(ClientSocketConfiguration clientSocketConfiguration, NioSocketConnector connector) {
         super(clientSocketConfiguration, connector);
     }
 
@@ -41,6 +43,7 @@ public class Client extends AbstractNetworkChannel {
 
     @Override
     public NetworkChannel stop() {
+        stop = true;
         if (session != null && session.isConnected()) {
             session.closeNow();
         }
@@ -60,8 +63,9 @@ public class Client extends AbstractNetworkChannel {
         return (NioSocketConnector) ioService;
     }
 
-    protected ClientSocketConfiguration getClientConfig() {
+    public ClientSocketConfiguration getClientConfig() {
         return (ClientSocketConfiguration) getConfiguration();
     }
+
 
 }

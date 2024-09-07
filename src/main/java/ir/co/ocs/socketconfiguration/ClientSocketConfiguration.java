@@ -4,6 +4,8 @@ public class ClientSocketConfiguration extends DefaultTcpSocketConfiguration {
     private String host;
     private boolean permanent;
     private boolean highPriority;
+    private int maxRetries;
+    private int retryInterval;
 
     public String getHost() {
         return host;
@@ -27,5 +29,21 @@ public class ClientSocketConfiguration extends DefaultTcpSocketConfiguration {
 
     public void setHighPriority(boolean highPriority) {
         this.highPriority = highPriority;
+    }
+
+    public int getMaxRetries() {
+        return maxRetries;
+    }
+
+    public void setMaxRetries(int maxRetries) {
+        this.maxRetries = maxRetries;
+    }
+
+    public int getRetryInterval() {
+        return retryInterval;
+    }
+
+    public void setRetryInterval(int retryInterval) {
+        this.retryInterval = retryInterval;
     }
 }

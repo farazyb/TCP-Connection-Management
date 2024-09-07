@@ -5,7 +5,8 @@ import ir.co.ocs.socketconfiguration.DefaultTcpSocketConfiguration;
 import org.apache.mina.core.filterchain.IoFilter;
 import org.apache.mina.core.service.IoService;
 
-public interface NetworkChannel {
+public interface NetworkChannel extends ServiceLifecycle {
+
     public void setHandler(NetworkChannelHandler handler);
 
     public void addFilter(String name, IoFilter filterChain);

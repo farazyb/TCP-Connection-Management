@@ -5,7 +5,7 @@ import ir.co.ocs.Handlers.NetworkChannelHandler;
 import ir.co.ocs.statistics.Statistics;
 import ir.co.ocs.codec.FixedLengthByteArrayFactory;
 import ir.co.ocs.socketconfiguration.DefaultTcpSocketConfiguration;
-import ir.co.ocs.socketconfiguration.SocketConfiguration;
+import ir.co.ocs.socketconfiguration.SocketConfigurationInterface;
 import ir.co.ocs.socketconfiguration.SocketConfigurationHandler;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.filterchain.IoFilter;
@@ -20,27 +20,28 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-public abstract class AbstractNetworkChannel implements NetworkChannel, ServiceLifecycle {
+public abstract class AbstractNetworkChannel implements NetworkChannel {
 
     protected Statistics statistics;
     protected IoService ioService;
     protected CountDownLatch latch;
     protected Thread serverThread;
-
+    protected volatile boolean stop = false;
     private DefaultTcpSocketConfiguration defaultTcpSocketConfiguration;
-    private final SocketConfiguration socketConfiguration;
+    private final SocketConfigurationInterface socketConfiguration;
 
 
     protected AbstractNetworkChannel(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration
             , IoService ioService
-            , SocketConfiguration socketConfiguration
+            , SocketConfigurationInterface socketConfiguration
             , Statistics statistics) {
         this.socketConfiguration = socketConfiguration;
         this.ioService = ioService;
+        this.statistics = statistics;
         setDefaultTcpSocketConfiguration(defaultTcpSocketConfiguration);
         setDefaultFilter(ioService);
         applyConfig(this.ioService);
-        this.statistics = statistics;
+
 
     }
 
@@ -48,10 +49,11 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, ServiceL
             , IoService ioService) {
         this.socketConfiguration = new SocketConfigurationHandler();
         this.ioService = ioService;
+        this.statistics = new DefaultStatistics();
         setDefaultTcpSocketConfiguration(defaultTcpSocketConfiguration);
         setDefaultFilter(ioService);
         applyConfig(ioService);
-        this.statistics = new DefaultStatistics();
+
     }
 
     private void setDefaultTcpSocketConfiguration(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration) {
@@ -98,7 +100,7 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, ServiceL
     }
 
     public IoFilterAdapter getStatisticFilter() {
-        return statistics.getStatisticsFilter();
+        return this.statistics.getStatisticsFilter();
     }
 
     public String getIdentification() {
@@ -107,5 +109,9 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, ServiceL
             throw new RuntimeException("Identification name must set");
         }
         return identificationName;
+    }
+
+    public boolean shouldStop() {
+        return stop;
     }
 }

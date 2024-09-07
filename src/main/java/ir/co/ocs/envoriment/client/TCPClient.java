@@ -1,13 +1,12 @@
 package ir.co.ocs.envoriment.client;
 
 import ir.co.ocs.socketconfiguration.ClientSocketConfiguration;
-import ir.co.ocs.socketconfiguration.DefaultTcpSocketConfiguration;
-import ir.co.ocs.socketconfiguration.SocketConfiguration;
-import org.apache.mina.transport.socket.nio.NioSocketConnector;
+import ir.co.ocs.socketconfiguration.SocketConfigurationInterface;
+import ir.co.ocs.statistics.Statistics;
 
 public final class TCPClient extends Client {
-    public TCPClient(ClientSocketConfiguration clientSocketConfiguration, ClientFactory clientFactory, SocketConfiguration socketConfiguration) {
-        super(clientSocketConfiguration, clientFactory.createServer(), socketConfiguration);
+   public  TCPClient(ClientSocketConfiguration clientSocketConfiguration, ClientFactory clientFactory, SocketConfigurationInterface socketConfiguration, Statistics statistics) {
+        super(clientSocketConfiguration, clientFactory.createServer(), socketConfiguration, statistics);
     }
 
     public TCPClient(ClientSocketConfiguration clientSocketConfiguration, ClientFactory clientFactory) {

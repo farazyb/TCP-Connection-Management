@@ -1,9 +1,8 @@
 package ir.co.ocs.envoriment.server;
 
 import ir.co.ocs.envoriment.networkchannel.AbstractNetworkChannel;
-import ir.co.ocs.socketconfiguration.DefaultTcpSocketConfiguration;
 import ir.co.ocs.socketconfiguration.ServerSocketConfiguration;
-import ir.co.ocs.socketconfiguration.SocketConfiguration;
+import ir.co.ocs.socketconfiguration.SocketConfigurationInterface;
 import ir.co.ocs.statistics.Statistics;
 import lombok.extern.log4j.Log4j;
 import org.apache.mina.core.service.IoService;
@@ -17,7 +16,7 @@ import java.util.concurrent.CountDownLatch;
 public abstract class Server extends AbstractNetworkChannel {
 
 
-    public Server(ServerSocketConfiguration serverSocketConfiguration, NioSocketAcceptor acceptor, SocketConfiguration socketConfiguration, Statistics statistics) {
+    public Server(ServerSocketConfiguration serverSocketConfiguration, NioSocketAcceptor acceptor, SocketConfigurationInterface socketConfiguration, Statistics statistics) {
         super(serverSocketConfiguration, acceptor, socketConfiguration, statistics);
 
     }
@@ -45,6 +44,7 @@ public abstract class Server extends AbstractNetworkChannel {
 
     @Override
     public Server stop() {
+        stop=true;
         if (latch != null) {
             latch.countDown(); // Signal the server to stop
         }

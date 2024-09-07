@@ -48,7 +48,6 @@ public class SessionStatisticsFilter extends IoFilterAdapter {
 
     @Override
     public void messageReceived(NextFilter nextFilter, IoSession session, Object message) throws Exception {
-        TimeUnit.SECONDS.sleep(10);
         messagesRead.incrementAndGet();
         super.messageReceived(nextFilter, session, message);
     }

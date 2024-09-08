@@ -37,14 +37,7 @@ public abstract class Server extends AbstractNetworkChannel {
 
     @Override
     public Server restart() {
-        stop();
-        start();
-        return this;
-    }
-
-    @Override
-    public Server stop() {
-        stop=true;
+        stop = true;
         if (latch != null) {
             latch.countDown(); // Signal the server to stop
         }
@@ -52,16 +45,38 @@ public abstract class Server extends AbstractNetworkChannel {
             serverThread.join(); // Wait for the server thread to finish
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
+        } finally {
+            nioSocketAcceptor().unbind(); // Unbind the server
         }
+
         return this;
     }
 
     @Override
+    public void stop() {
+        stop = true;
+        if (latch != null) {
+            latch.countDown(); // Signal the server to stop
+        }
+        try {
+            serverThread.join(); // Wait for the server thread to finish
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Restore interrupted status
+        } finally {
+            nioSocketAcceptor().unbind(); // Unbind the server
+            nioSocketAcceptor().dispose();
+        }
+
+    }
+
+    @Override
     public Server start() {
+
         latch = new CountDownLatch(1); // Initialize the latch
 
         serverThread = new Thread(() -> {
             try {
+                System.out.println(Thread.currentThread().getName() + " Started");
                 bind();
                 latch.await(); // Wait indefinitely until the latch is counted down
             } catch (IOException e) {
@@ -69,8 +84,7 @@ public abstract class Server extends AbstractNetworkChannel {
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // Restore interrupted status
             } finally {
-                nioSocketAcceptor().unbind(); // Unbind the server
-                nioSocketAcceptor().dispose(); // Clean up resources when the server stops
+                System.out.println(Thread.currentThread().getName() + " Stopped");
             }
         });
 
@@ -78,9 +92,14 @@ public abstract class Server extends AbstractNetworkChannel {
         return this;
     }
 
+
     @Override
     public void addProcessor() {
 
+    }
+
+    public ServerSocketConfiguration getServerConfig() {
+        return (ServerSocketConfiguration) getConfiguration();
     }
 
 }

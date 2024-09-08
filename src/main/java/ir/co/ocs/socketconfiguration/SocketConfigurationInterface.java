@@ -5,7 +5,7 @@ import org.apache.mina.core.service.IoConnector;
 
 public interface SocketConfigurationInterface {
 
-    void applyConfig(IoAcceptor acceptor, DefaultTcpSocketConfiguration config);
+    void applyConfig(IoAcceptor acceptor, ServerSocketConfiguration config);
 
-    void applyConfig(IoConnector acceptor, DefaultTcpSocketConfiguration config);
+    void applyConfig(IoConnector acceptor,  ClientSocketConfiguration config);
 }

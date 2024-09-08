@@ -42,13 +42,12 @@ public class Client extends AbstractNetworkChannel {
     }
 
     @Override
-    public NetworkChannel stop() {
+    public void stop() {
         stop = true;
         if (session != null && session.isConnected()) {
             session.closeNow();
         }
         nioSocketConnector().dispose();
-        return this;
     }
 
 

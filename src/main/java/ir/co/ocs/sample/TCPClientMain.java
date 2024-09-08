@@ -3,7 +3,7 @@ package ir.co.ocs.sample;
 import ir.co.ocs.Handlers.ClientHandler;
 import ir.co.ocs.envoriment.client.ClientFactory;
 import ir.co.ocs.envoriment.client.TCPClient;
-import ir.co.ocs.managers.ClientManager;
+import ir.co.ocs.envoriment.client.ClientManager;
 import ir.co.ocs.socketconfiguration.ClientSocketConfiguration;
 
 public class TCPClientMain {

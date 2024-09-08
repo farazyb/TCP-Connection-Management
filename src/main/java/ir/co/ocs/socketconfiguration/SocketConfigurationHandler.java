@@ -7,12 +7,14 @@ import org.apache.mina.core.session.IoSessionConfig;
 public class SocketConfigurationHandler implements SocketConfigurationInterface {
 
 
-    public void applyConfig(IoAcceptor acceptor, DefaultTcpSocketConfiguration config) {
+    public void applyConfig(IoAcceptor acceptor, ServerSocketConfiguration config) {
+        config.validate();
         IoSessionConfig sessionConfig = acceptor.getSessionConfig();
         sessionConfig.setAll(config);
     }
 
-    public void applyConfig(IoConnector connector, DefaultTcpSocketConfiguration config) {
+    public void applyConfig(IoConnector connector, ClientSocketConfiguration config) {
+        config.validate();
         IoSessionConfig sessionConfig = connector.getSessionConfig();
         sessionConfig.setAll(config);
     }

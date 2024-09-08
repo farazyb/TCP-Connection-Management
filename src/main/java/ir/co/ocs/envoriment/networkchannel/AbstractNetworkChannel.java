@@ -1,12 +1,12 @@
 package ir.co.ocs.envoriment.networkchannel;
 
+import ir.co.ocs.Handlers.HandlerManager;
+import ir.co.ocs.filters.FilterManager;
+import ir.co.ocs.socketconfiguration.*;
 import ir.co.ocs.statistics.DefaultStatistics;
 import ir.co.ocs.Handlers.NetworkChannelHandler;
 import ir.co.ocs.statistics.Statistics;
 import ir.co.ocs.codec.FixedLengthByteArrayFactory;
-import ir.co.ocs.socketconfiguration.DefaultTcpSocketConfiguration;
-import ir.co.ocs.socketconfiguration.SocketConfigurationInterface;
-import ir.co.ocs.socketconfiguration.SocketConfigurationHandler;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.filterchain.IoFilter;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
@@ -20,18 +20,18 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 
-public abstract class AbstractNetworkChannel implements NetworkChannel {
+public abstract class AbstractNetworkChannel implements NetworkChannel, FilterManager, HandlerManager {
 
     protected Statistics statistics;
     protected IoService ioService;
     protected CountDownLatch latch;
     protected Thread serverThread;
     protected volatile boolean stop = false;
-    private DefaultTcpSocketConfiguration defaultTcpSocketConfiguration;
+    private BaseTcpSocketConfiguration baseTcpSocketConfiguration;
     private final SocketConfigurationInterface socketConfiguration;
 
 
-    protected AbstractNetworkChannel(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration
+    protected AbstractNetworkChannel(BaseTcpSocketConfiguration defaultTcpSocketConfiguration
             , IoService ioService
             , SocketConfigurationInterface socketConfiguration
             , Statistics statistics) {
@@ -45,7 +45,7 @@ public abstract class AbstractNetworkChannel implements NetworkChannel {
 
     }
 
-    protected AbstractNetworkChannel(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration
+    protected AbstractNetworkChannel(BaseTcpSocketConfiguration defaultTcpSocketConfiguration
             , IoService ioService) {
         this.socketConfiguration = new SocketConfigurationHandler();
         this.ioService = ioService;
@@ -56,41 +56,43 @@ public abstract class AbstractNetworkChannel implements NetworkChannel {
 
     }
 
-    private void setDefaultTcpSocketConfiguration(DefaultTcpSocketConfiguration defaultTcpSocketConfiguration) {
+    private void setDefaultTcpSocketConfiguration(BaseTcpSocketConfiguration defaultTcpSocketConfiguration) {
         if (Objects.isNull(defaultTcpSocketConfiguration)) {
             throw new NullPointerException("defaultTcpSocketConfiguration must not be Null");
         }
-        this.defaultTcpSocketConfiguration = defaultTcpSocketConfiguration;
+        this.baseTcpSocketConfiguration = defaultTcpSocketConfiguration;
     }
 
     private void applyConfig(IoService ioService) {
         if (ioService instanceof IoAcceptor ioAcceptor) {
-            this.socketConfiguration.applyConfig(ioAcceptor, defaultTcpSocketConfiguration);
+            this.socketConfiguration.applyConfig(ioAcceptor, (ServerSocketConfiguration) baseTcpSocketConfiguration);
         } else if (ioService instanceof IoConnector ioConnector) {
-            this.socketConfiguration.applyConfig(ioConnector, defaultTcpSocketConfiguration);
+            this.socketConfiguration.applyConfig(ioConnector, (ClientSocketConfiguration) baseTcpSocketConfiguration);
         }
     }
 
     @Override
-    public DefaultTcpSocketConfiguration getConfiguration() {
-        return this.defaultTcpSocketConfiguration;
+    public BaseTcpSocketConfiguration getConfiguration() {
+        return this.baseTcpSocketConfiguration;
     }
 
     @Override
     public void setDefaultFilter(IoService ioService) {
         DefaultIoFilterChainBuilder filterChainBuilder = ioService.getFilterChain();
         filterChainBuilder.addLast("codec", new ProtocolCodecFilter(new FixedLengthByteArrayFactory()));
-        filterChainBuilder.addLast("LoggingFilter", new LoggingFilter(defaultTcpSocketConfiguration.getChannelIdentificationName()));
+        filterChainBuilder.addLast("LoggingFilter", new LoggingFilter(baseTcpSocketConfiguration.getChannelIdentificationName()));
         filterChainBuilder.addLast("sessionStats", getStatisticFilter());
 
     }
 
+    @Override
     public void setHandler(NetworkChannelHandler handler) {
-        handler.setChannelAttribute(this.defaultTcpSocketConfiguration.getChannelAttribute());
+        handler.setChannelAttribute(this.baseTcpSocketConfiguration.getChannelAttribute());
         this.ioService.setHandler(handler);
     }
 
-    public void addFilter(String name, IoFilter filterChain) {
+    @Override
+    public void addFilter(String name, IoFilterAdapter filterChain) {
 
         ioService.getFilterChain().addLast(name, filterChain);
     }

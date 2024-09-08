@@ -1,49 +1,24 @@
 package ir.co.ocs.socketconfiguration;
 
-public class ClientSocketConfiguration extends DefaultTcpSocketConfiguration {
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class ClientSocketConfiguration extends BaseTcpSocketConfiguration {
     private String host;
     private boolean permanent;
     private boolean highPriority;
     private int maxRetries;
     private int retryInterval;
 
-    public String getHost() {
-        return host;
+    @Override
+    public void validate() {
+        super.validate(); // Call base validations
+        if (host == null || host.isEmpty()) {
+            throw new IllegalArgumentException("Host is mandatory for client configuration.");
+        }
+        // Additional client-specific validation
     }
 
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public boolean isPermanent() {
-        return permanent;
-    }
-
-    public void setPermanent(boolean permanent) {
-        this.permanent = permanent;
-    }
-
-    public boolean isHighPriority() {
-        return highPriority;
-    }
-
-    public void setHighPriority(boolean highPriority) {
-        this.highPriority = highPriority;
-    }
-
-    public int getMaxRetries() {
-        return maxRetries;
-    }
-
-    public void setMaxRetries(int maxRetries) {
-        this.maxRetries = maxRetries;
-    }
-
-    public int getRetryInterval() {
-        return retryInterval;
-    }
-
-    public void setRetryInterval(int retryInterval) {
-        this.retryInterval = retryInterval;
-    }
 }

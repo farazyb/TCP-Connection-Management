@@ -30,7 +30,6 @@ public abstract class AbstractManager<T extends NetworkChannel> implements Manag
     public T remove(String identificationName) {
         T networkChannel = services.get(identificationName);
         if (networkChannel != null) {
-//            networkChannel.stop();
             services.remove(identificationName);
             log.info("Service removed: " + identificationName);
             return networkChannel;
@@ -43,6 +42,7 @@ public abstract class AbstractManager<T extends NetworkChannel> implements Manag
     public void stop(String identificationName) {
         NetworkChannel networkChannel = services.get(identificationName);
         if (networkChannel != null) {
+            remove(identificationName);
             networkChannel.stop();
             log.info("Service " + identificationName + " stopped.");
         } else {
@@ -63,7 +63,6 @@ public abstract class AbstractManager<T extends NetworkChannel> implements Manag
     }
 
     public void restart(String identificationName) {
-
         T networkChannel = remove(identificationName);
         networkChannel.restart();
         add(networkChannel);
@@ -75,6 +74,20 @@ public abstract class AbstractManager<T extends NetworkChannel> implements Manag
         startConnections();
     }
 
+    @Override
+    public NetworkChannel removeAndStop(String identificationName) {
+        T networkChannel = services.get(identificationName);
+        if (networkChannel != null) {
+            networkChannel.stop();
+            services.remove(identificationName);
+            log.info("Service removed: " + identificationName);
+            return networkChannel;
+        } else {
+            throw new IllegalArgumentException("Service with name '" + identificationName + "' not registered");
+        }
+    }
+
+    public abstract void shutdown();
 
     protected abstract void startConnection(T networkChannel);
 

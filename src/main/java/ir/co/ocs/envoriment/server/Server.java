@@ -1,5 +1,6 @@
 package ir.co.ocs.envoriment.server;
 
+import ir.co.ocs.envoriment.enums.State;
 import ir.co.ocs.envoriment.networkchannel.AbstractNetworkChannel;
 import ir.co.ocs.socketconfiguration.ServerSocketConfiguration;
 import ir.co.ocs.socketconfiguration.SocketConfigurationInterface;
@@ -37,7 +38,7 @@ public abstract class Server extends AbstractNetworkChannel {
 
     @Override
     public Server restart() {
-        stop = true;
+        setState(State.RESTARTING);
         if (latch != null) {
             latch.countDown(); // Signal the server to stop
         }
@@ -54,7 +55,7 @@ public abstract class Server extends AbstractNetworkChannel {
 
     @Override
     public void stop() {
-        stop = true;
+        setState(State.STOP);
         if (latch != null) {
             latch.countDown(); // Signal the server to stop
         }
@@ -72,8 +73,8 @@ public abstract class Server extends AbstractNetworkChannel {
     @Override
     public Server start() {
 
+        setState(State.RUNNING);
         latch = new CountDownLatch(1); // Initialize the latch
-
         serverThread = new Thread(() -> {
             try {
                 System.out.println(Thread.currentThread().getName() + " Started");

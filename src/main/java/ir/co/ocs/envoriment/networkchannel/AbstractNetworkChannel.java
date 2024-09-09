@@ -1,6 +1,7 @@
 package ir.co.ocs.envoriment.networkchannel;
 
 import ir.co.ocs.Handlers.HandlerManager;
+import ir.co.ocs.envoriment.enums.State;
 import ir.co.ocs.filters.FilterManager;
 import ir.co.ocs.socketconfiguration.*;
 import ir.co.ocs.statistics.DefaultStatistics;
@@ -8,7 +9,6 @@ import ir.co.ocs.Handlers.NetworkChannelHandler;
 import ir.co.ocs.statistics.Statistics;
 import ir.co.ocs.codec.FixedLengthByteArrayFactory;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
-import org.apache.mina.core.filterchain.IoFilter;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.service.IoAcceptor;
 import org.apache.mina.core.service.IoConnector;
@@ -26,7 +26,7 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
     protected IoService ioService;
     protected CountDownLatch latch;
     protected Thread serverThread;
-    protected volatile boolean stop = false;
+    protected volatile State  state= State.NONE;
     private BaseTcpSocketConfiguration baseTcpSocketConfiguration;
     private final SocketConfigurationInterface socketConfiguration;
 
@@ -113,7 +113,11 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
         return identificationName;
     }
 
-    public boolean shouldStop() {
-        return stop;
+    public boolean isActive() {
+        return this.state==State.STOP;
+    }
+
+    public void setState(State state) {
+        this.state=state;
     }
 }

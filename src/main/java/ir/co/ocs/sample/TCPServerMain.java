@@ -31,13 +31,26 @@ public class TCPServerMain {
         ServerManager serverManager = new ServerManager();
         serverManager.add(server);
 
-        try {
-            TimeUnit.SECONDS.sleep(10);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-            serverManager.restart(server.getIdentification());
-
-
+//        try {
+//            TimeUnit.SECONDS.sleep(10);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//            serverManager.stop(server.getIdentification());
+//        try {
+//            TimeUnit.SECONDS.sleep(10);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        server = new TCPServer(serverSocketConfiguration, new ServerFactory());
+//        server.setHandler(new ServerHandler());
+//        server.addFilter("executor", new ExecutorFilter(Executors.newFixedThreadPool(4)));
+//        serverManager.add(server);
+//        try {
+//            TimeUnit.SECONDS.sleep(10);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        serverManager.stop(server.getIdentification());
     }
 }

@@ -1,6 +1,7 @@
 package ir.co.ocs.envoriment.client;
 
 
+import ir.co.ocs.envoriment.enums.State;
 import ir.co.ocs.envoriment.networkchannel.AbstractNetworkChannel;
 import ir.co.ocs.envoriment.networkchannel.NetworkChannel;
 import ir.co.ocs.socketconfiguration.ClientSocketConfiguration;
@@ -38,23 +39,29 @@ public class Client extends AbstractNetworkChannel {
         this.future = nioSocketConnector().connect(new InetSocketAddress(getClientConfig().getHost(), getClientConfig().getPort()));
         this.future.awaitUninterruptibly();
         session = future.getSession();
+        this.setState(State.RUNNING);
         return this;
     }
 
     @Override
     public void stop() {
-        stop = true;
         if (session != null && session.isConnected()) {
             session.closeNow();
         }
         nioSocketConnector().dispose();
+        this.setState(State.STOP);
     }
 
 
     @Override
     public NetworkChannel restart() throws RuntimeIoException {
-        stop();
-        return start();
+        if (session != null && session.isConnected()) {
+            this.setState(State.RESTARTING);
+            session.closeNow();
+            return start();
+        } else {
+            throw new IllegalArgumentException("Service with ID " + getIdentification() + " is not Running");
+        }
     }
 
 

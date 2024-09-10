@@ -2,6 +2,7 @@ package ir.co.ocs.socketconfiguration;
 
 import ir.co.ocs.Processor;
 import ir.co.ocs.codec.FixedLengthByteArrayFactory;
+import ir.co.ocs.envoriment.networkchannel.SSLManger;
 import ir.co.ocs.messageprotocol.ProtocolMessageFactory;
 import lombok.*;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
@@ -59,11 +60,7 @@ import java.util.HashMap;
 public class BaseTcpSocketConfiguration extends DefaultSocketSessionConfig implements SocketConfiguration {
     private String channelIdentificationName;//mandatory
     private int port;//mandatory
-    private boolean ssl;//mandatory
-    private String keyStorePath;// if ssl is true mandatory otherwise optional;
-    private String trustStorePath;// if ssl is true mandatory otherwise optional;
-    private String keyStorePassword;// if ssl is true mandatory otherwise optional;
-    private String trustStorePassword;// if ssl is true mandatory otherwise optional;
+    private SSLManger sslManger;
     private HashMap<Object, Object> channelAttribute;//optional if is not set default
     private ProtocolMessageFactory protocolMessageFactory;
     private ProtocolCodecFactory protocolCodecFactory;//optional if is not set default
@@ -75,7 +72,6 @@ public class BaseTcpSocketConfiguration extends DefaultSocketSessionConfig imple
         setReaderIdleTime(2);
         setWriterIdleTime(2);
         setKeepAlive(true);
-        this.ssl = false;
         channelAttribute = new HashMap<>();
     }
 
@@ -93,21 +89,6 @@ public class BaseTcpSocketConfiguration extends DefaultSocketSessionConfig imple
         if (processor == null) {
             //throw new IllegalArgumentException("Processor is mandatory.");
             //todo check for processor
-        }
-
-        if (ssl) {
-            if (keyStorePath == null || keyStorePath.isEmpty()) {
-                throw new IllegalArgumentException("KeyStore path is mandatory when SSL is enabled.");
-            }
-            if (trustStorePath == null || trustStorePath.isEmpty()) {
-                throw new IllegalArgumentException("TrustStore path is mandatory when SSL is enabled.");
-            }
-            if (keyStorePassword == null || keyStorePassword.isEmpty()) {
-                throw new IllegalArgumentException("KeyStore password is mandatory when SSL is enabled.");
-            }
-            if (trustStorePassword == null || trustStorePassword.isEmpty()) {
-                throw new IllegalArgumentException("TrustStore password is mandatory when SSL is enabled.");
-            }
         }
 
         // Optionally ensure default protocol codec factory if not set

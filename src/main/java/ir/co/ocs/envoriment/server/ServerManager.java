@@ -28,6 +28,14 @@ public class ServerManager extends AbstractManager<Server> {
         server.start();
         log.info("Server " + server.getIdentification() + " Starts Listening on port:" + server.getServerConfig().getPort());
     }
+
+    public void restart(String identificationName) {
+        Server networkChannel = remove(identificationName);
+        networkChannel.restart();
+        add(networkChannel);
+
+    }
+
     /**
      * Shuts down all managed servers. This method iterates over all the {@code Server} instances managed by
      * the {@code ServerManager}, and for each one, it attempts to stop the server gracefully by calling the

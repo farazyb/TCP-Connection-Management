@@ -8,6 +8,7 @@ import ir.co.ocs.statistics.DefaultStatistics;
 import ir.co.ocs.Handlers.NetworkChannelHandler;
 import ir.co.ocs.statistics.Statistics;
 import ir.co.ocs.codec.FixedLengthByteArrayFactory;
+import lombok.Setter;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.service.IoAcceptor;
@@ -15,7 +16,11 @@ import org.apache.mina.core.service.IoConnector;
 import org.apache.mina.core.service.IoService;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.logging.LoggingFilter;
+import org.apache.mina.filter.ssl.SslFilter;
 
+import javax.net.ssl.*;
+import java.io.FileInputStream;
+import java.security.KeyStore;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
@@ -26,15 +31,12 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
     protected IoService ioService;
     protected CountDownLatch latch;
     protected Thread serverThread;
-    protected volatile State  state= State.NONE;
+    @Setter
+    protected volatile State state = State.NONE;
     private BaseTcpSocketConfiguration baseTcpSocketConfiguration;
     private final SocketConfigurationInterface socketConfiguration;
 
-
-    protected AbstractNetworkChannel(BaseTcpSocketConfiguration defaultTcpSocketConfiguration
-            , IoService ioService
-            , SocketConfigurationInterface socketConfiguration
-            , Statistics statistics) {
+    protected AbstractNetworkChannel(BaseTcpSocketConfiguration defaultTcpSocketConfiguration, IoService ioService, SocketConfigurationInterface socketConfiguration, Statistics statistics) {
         this.socketConfiguration = socketConfiguration;
         this.ioService = ioService;
         this.statistics = statistics;
@@ -45,8 +47,7 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
 
     }
 
-    protected AbstractNetworkChannel(BaseTcpSocketConfiguration defaultTcpSocketConfiguration
-            , IoService ioService) {
+    protected AbstractNetworkChannel(BaseTcpSocketConfiguration defaultTcpSocketConfiguration, IoService ioService) {
         this.socketConfiguration = new SocketConfigurationHandler();
         this.ioService = ioService;
         this.statistics = new DefaultStatistics();
@@ -82,7 +83,27 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
         filterChainBuilder.addLast("codec", new ProtocolCodecFilter(new FixedLengthByteArrayFactory()));
         filterChainBuilder.addLast("LoggingFilter", new LoggingFilter(baseTcpSocketConfiguration.getChannelIdentificationName()));
         filterChainBuilder.addLast("sessionStats", getStatisticFilter());
+        addSSL(filterChainBuilder);
 
+    }
+
+    private void addSSL(DefaultIoFilterChainBuilder filterChainBuilder) {
+        SSLManger sslManger = getConfiguration().getSslManger();
+        if (sslManger != null) {
+            SSLContext sslContext = null;
+            try {
+                sslContext = sslManger.createSSLContext();
+                if (sslContext != null) {
+                    filterChainBuilder.addLast("SSL", new SslFilter(getConfiguration().getSslManger().createSSLContext()));
+                } else {
+                    throw new IllegalArgumentException("SSLContext is not Valid, For Secure tunnel please provide SSLContext");
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+
+        }
     }
 
     @Override
@@ -114,10 +135,33 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
     }
 
     public boolean isActive() {
-        return this.state==State.STOP;
+        return this.state == State.STOP;
     }
 
-    public void setState(State state) {
-        this.state=state;
+
+    private KeyManager[] configureKeyManagers(String path, String password) throws Exception {
+        char[] keystorePassword = password.toCharArray();
+        KeyStore keystore = KeyStore.getInstance("JKS");
+        keystore.load(new FileInputStream(path), keystorePassword);
+
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+        keyManagerFactory.init(keystore, keystorePassword);
+
+        return keyManagerFactory.getKeyManagers();
+    }
+
+    /**
+     * Configure trust managers for the SSL context.
+     *
+     * @return An array of trust managers.
+     */
+    private TrustManager[] configureTrustManagers(String path, String password) throws Exception {
+        char[] trustStorePassword = password.toCharArray();
+        KeyStore keystore = KeyStore.getInstance("JKS");
+        keystore.load(new FileInputStream(path), trustStorePassword);
+
+        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+        trustManagerFactory.init(keystore);
+        return trustManagerFactory.getTrustManagers();
     }
 }

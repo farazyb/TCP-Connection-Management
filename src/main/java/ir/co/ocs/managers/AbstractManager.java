@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Log4j
-public abstract class AbstractManager<T extends NetworkChannel> implements Manager<T> {
+public abstract class AbstractManager<T extends NetworkChannel> implements Manager<T>,Restartable {
     protected final Map<String, T> services = new HashMap<>();
 
 
@@ -60,13 +60,6 @@ public abstract class AbstractManager<T extends NetworkChannel> implements Manag
         for (NetworkChannel networkChannel : services.values()) {
             networkChannel.stop();
         }
-    }
-
-    public void restart(String identificationName) {
-        T networkChannel = remove(identificationName);
-        networkChannel.restart();
-        add(networkChannel);
-
     }
 
     public void restartConnections() {

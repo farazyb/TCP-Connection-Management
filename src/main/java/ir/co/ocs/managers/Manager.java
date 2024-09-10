@@ -8,7 +8,6 @@ public interface Manager<T extends NetworkChannel> {
 
     public NetworkChannel remove(String identificationName);
 
-    public void stop(String identificationName);
 
     public NetworkChannel removeAndStop(String identification);
 }

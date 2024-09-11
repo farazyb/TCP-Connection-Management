@@ -65,6 +65,7 @@ public class BaseTcpSocketConfiguration extends DefaultSocketSessionConfig imple
     private ProtocolMessageFactory protocolMessageFactory;
     private ProtocolCodecFactory protocolCodecFactory;//optional if is not set default
     private Processor processor;//mandatory
+    private boolean permanent;
 
 
     public BaseTcpSocketConfiguration() {
@@ -72,6 +73,7 @@ public class BaseTcpSocketConfiguration extends DefaultSocketSessionConfig imple
         setReaderIdleTime(2);
         setWriterIdleTime(2);
         setKeepAlive(true);
+        permanent = true;
         channelAttribute = new HashMap<>();
     }
 

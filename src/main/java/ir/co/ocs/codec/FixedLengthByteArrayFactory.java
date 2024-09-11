@@ -6,6 +6,7 @@ import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
 
 public class FixedLengthByteArrayFactory implements ProtocolCodecFactory {
+
     @Override
     public ProtocolEncoder getEncoder(IoSession session) throws Exception {
         return new FixedLengthByteArrayEncoder();

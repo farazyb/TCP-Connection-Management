@@ -1,7 +1,9 @@
 package ir.co.ocs.envoriment.networkchannel;
 
 import ir.co.ocs.Handlers.HandlerManager;
+import ir.co.ocs.SessionManager;
 import ir.co.ocs.envoriment.enums.State;
+import ir.co.ocs.filters.AddChannelAttributeFiler;
 import ir.co.ocs.filters.FilterManager;
 import ir.co.ocs.socketconfiguration.*;
 import ir.co.ocs.statistics.DefaultStatistics;
@@ -35,11 +37,14 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
     protected volatile State state = State.NONE;
     private BaseTcpSocketConfiguration baseTcpSocketConfiguration;
     private final SocketConfigurationInterface socketConfiguration;
+    private SessionManager sessionManager;
+
 
     protected AbstractNetworkChannel(BaseTcpSocketConfiguration defaultTcpSocketConfiguration, IoService ioService, SocketConfigurationInterface socketConfiguration, Statistics statistics) {
         this.socketConfiguration = socketConfiguration;
         this.ioService = ioService;
         this.statistics = statistics;
+        sessionManager = new SessionManager(60, getConfiguration().isPermanent());
         setDefaultTcpSocketConfiguration(defaultTcpSocketConfiguration);
         setDefaultFilter(ioService);
         applyConfig(this.ioService);
@@ -80,6 +85,7 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
     @Override
     public void setDefaultFilter(IoService ioService) {
         DefaultIoFilterChainBuilder filterChainBuilder = ioService.getFilterChain();
+        filterChainBuilder.addFirst("Attribute", new AddChannelAttributeFiler(getConfiguration().getChannelAttribute()));
         filterChainBuilder.addLast("codec", new ProtocolCodecFilter(new FixedLengthByteArrayFactory()));
         filterChainBuilder.addLast("LoggingFilter", new LoggingFilter(baseTcpSocketConfiguration.getChannelIdentificationName()));
         filterChainBuilder.addLast("sessionStats", getStatisticFilter());
@@ -108,7 +114,6 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
 
     @Override
     public void setHandler(NetworkChannelHandler handler) {
-        handler.setChannelAttribute(this.baseTcpSocketConfiguration.getChannelAttribute());
         this.ioService.setHandler(handler);
     }
 
@@ -139,29 +144,4 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
     }
 
 
-    private KeyManager[] configureKeyManagers(String path, String password) throws Exception {
-        char[] keystorePassword = password.toCharArray();
-        KeyStore keystore = KeyStore.getInstance("JKS");
-        keystore.load(new FileInputStream(path), keystorePassword);
-
-        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-        keyManagerFactory.init(keystore, keystorePassword);
-
-        return keyManagerFactory.getKeyManagers();
-    }
-
-    /**
-     * Configure trust managers for the SSL context.
-     *
-     * @return An array of trust managers.
-     */
-    private TrustManager[] configureTrustManagers(String path, String password) throws Exception {
-        char[] trustStorePassword = password.toCharArray();
-        KeyStore keystore = KeyStore.getInstance("JKS");
-        keystore.load(new FileInputStream(path), trustStorePassword);
-
-        TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        trustManagerFactory.init(keystore);
-        return trustManagerFactory.getTrustManagers();
-    }
 }

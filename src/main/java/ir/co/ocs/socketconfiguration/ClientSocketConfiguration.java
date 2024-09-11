@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class ClientSocketConfiguration extends BaseTcpSocketConfiguration {
     private String host;
-    private boolean permanent;
+
     private boolean highPriority;
     private int maxRetries;
     private int retryInterval;

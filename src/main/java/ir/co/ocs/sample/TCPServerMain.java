@@ -5,13 +5,12 @@ import ir.co.ocs.Handlers.ServerHandler;
 import ir.co.ocs.envoriment.server.ServerFactory;
 import ir.co.ocs.envoriment.server.TCPServer;
 
-import ir.co.ocs.envoriment.server.ServerManager;
+import ir.co.ocs.managers.ServerManager;
 import ir.co.ocs.socketconfiguration.ServerSocketConfiguration;
 import ir.co.ocs.socketconfiguration.enums.SocketMode;
 import org.apache.mina.filter.executor.ExecutorFilter;
 
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class TCPServerMain {
 

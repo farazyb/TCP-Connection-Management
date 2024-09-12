@@ -1,7 +1,6 @@
-package ir.co.ocs.envoriment.client;
+package ir.co.ocs.managers;
 
-import ir.co.ocs.managers.AbstractManager;
-import ir.co.ocs.managers.ConnectionManager;
+import ir.co.ocs.envoriment.client.Client;
 import lombok.extern.log4j.Log4j;
 
 

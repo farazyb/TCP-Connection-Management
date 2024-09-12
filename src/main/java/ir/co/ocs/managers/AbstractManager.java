@@ -5,13 +5,14 @@ import lombok.extern.log4j.Log4j;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 @Log4j
 public abstract class AbstractManager<T extends NetworkChannel> implements Manager<T>,Restartable {
-    protected final Map<String, T> services = new HashMap<>();
+    protected final Map<String, T> services;
 
+    public AbstractManager() {
+        services = new HashMap<>();
+    }
 
     @Override
     public void add(T networkChannel) {
@@ -38,7 +39,7 @@ public abstract class AbstractManager<T extends NetworkChannel> implements Manag
         }
     }
 
-    @Override
+
     public void stop(String identificationName) {
         NetworkChannel networkChannel = services.get(identificationName);
         if (networkChannel != null) {
@@ -84,5 +85,7 @@ public abstract class AbstractManager<T extends NetworkChannel> implements Manag
 
     protected abstract void startConnection(T networkChannel);
 
-
+    public Map<String, T> getServices() {
+        return services;
+    }
 }

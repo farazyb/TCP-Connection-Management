@@ -1,6 +1,6 @@
-package ir.co.ocs.envoriment.server;
+package ir.co.ocs.managers;
 
-import ir.co.ocs.managers.AbstractManager;
+import ir.co.ocs.envoriment.server.Server;
 import lombok.extern.log4j.Log4j;
 
 /**

@@ -3,7 +3,7 @@ package ir.co.ocs.sample;
 import ir.co.ocs.Handlers.ClientHandler;
 import ir.co.ocs.envoriment.client.ClientFactory;
 import ir.co.ocs.envoriment.client.TCPClient;
-import ir.co.ocs.envoriment.client.ClientManager;
+import ir.co.ocs.managers.ClientManager;
 import ir.co.ocs.socketconfiguration.ClientSocketConfiguration;
 
 import java.util.concurrent.TimeUnit;
@@ -37,7 +37,6 @@ public class TCPClientMain {
         clientSocketConfiguration.setMaxRetries(10);
         clientSocketConfiguration.setRetryInterval(10000);
         clientSocketConfiguration.setChannelIdentificationName("Test");
-        TCPClient client = new TCPClient(clientSocketConfiguration, new ClientFactory());
-        return client;
+        return new TCPClient(clientSocketConfiguration, new ClientFactory());
     }
 }

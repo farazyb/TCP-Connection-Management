@@ -3,6 +3,8 @@ package ir.co.ocs.managers;
 import ir.co.ocs.envoriment.server.Server;
 import lombok.extern.log4j.Log4j;
 
+import java.util.concurrent.CompletableFuture;
+
 /**
  * The {@code ServerManager} class is responsible for managing a collection of {@code Server} instances.
  * It extends the {@code AbstractManager} class, inheriting the ability to manage multiple servers and
@@ -25,8 +27,16 @@ public class ServerManager extends AbstractManager<Server> {
      */
     @Override
     public void startConnection(Server server) {
-        server.start();
-        log.info("Server " + server.getIdentification() + " Starts Listening on port:" + server.getServerConfig().getPort());
+        CompletableFuture<Boolean> future = server.startService();
+        future.thenAccept(isBound -> {
+            if (isBound) {
+                log.info("Server " + server.getIdentification() + " Starts Listening on port:" + server.getServerConfig().getPort());
+            }
+        }).exceptionally(e -> {
+            log.info("Server failed to bind: " + e.getMessage());
+            return null;
+        });
+
     }
 
     public void restart(String identificationName) {

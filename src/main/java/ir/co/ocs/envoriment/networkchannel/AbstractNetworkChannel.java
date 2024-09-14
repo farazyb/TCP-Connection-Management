@@ -140,7 +140,7 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
     }
 
     public boolean isActive() {
-        return this.state == State.STOP;
+        return this.state != State.STOP;
     }
 
 

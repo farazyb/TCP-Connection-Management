@@ -36,7 +36,7 @@ public class Client extends AbstractNetworkChannel {
     @Override
     public NetworkChannel start() throws RuntimeIoException {
 
-        this.future = nioSocketConnector().connect(new InetSocketAddress(getClientConfig().getHost(), getClientConfig().getPort()));
+        this.future = getConnector().connect(new InetSocketAddress(getClientConfig().getHost(), getClientConfig().getPort()));
         this.future.awaitUninterruptibly();
         session = future.getSession();
         this.setState(State.RUNNING);
@@ -48,7 +48,7 @@ public class Client extends AbstractNetworkChannel {
         if (session != null && session.isConnected()) {
             session.closeNow();
         }
-        nioSocketConnector().dispose();
+        getConnector().dispose();
         this.setState(State.STOP);
     }
 
@@ -65,7 +65,7 @@ public class Client extends AbstractNetworkChannel {
     }
 
 
-    protected NioSocketConnector nioSocketConnector() {
+    public NioSocketConnector getConnector() {
         return (NioSocketConnector) ioService;
     }
 

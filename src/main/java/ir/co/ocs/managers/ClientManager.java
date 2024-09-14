@@ -77,7 +77,7 @@ public class ClientManager extends AbstractManager<Client> implements Connection
         int retryCount = 0;
         boolean isPermanent = client.getClientConfig().isHighPriority();  // Assume `isHighPriority` is used to mark a client as permanent
 
-        while (!client.isActive()) {
+        while (client.isActive()) {
             try {
                 client.start();  // Attempt to connect to the server
                 log.info("Client " + client + " connected successfully.");

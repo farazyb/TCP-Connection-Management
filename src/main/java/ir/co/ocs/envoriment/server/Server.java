@@ -11,6 +11,7 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CountDownLatch;
 
 @Log4j
@@ -27,13 +28,13 @@ public abstract class Server extends AbstractNetworkChannel {
 
     }
 
-    protected NioSocketAcceptor nioSocketAcceptor() {
+    public NioSocketAcceptor getAcceptor() {
         return (NioSocketAcceptor) ioService;
     }
 
 
     public void bind() throws IOException {
-        nioSocketAcceptor().bind(new InetSocketAddress(getConfiguration().getPort()));
+        getAcceptor().bind(new InetSocketAddress(getConfiguration().getPort()));
     }
 
     @Override
@@ -47,7 +48,7 @@ public abstract class Server extends AbstractNetworkChannel {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
         } finally {
-            nioSocketAcceptor().unbind(); // Unbind the server
+            getAcceptor().unbind(); // Unbind the server
         }
 
         return this;
@@ -64,8 +65,8 @@ public abstract class Server extends AbstractNetworkChannel {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); // Restore interrupted status
         } finally {
-            nioSocketAcceptor().unbind(); // Unbind the server
-            nioSocketAcceptor().dispose();
+            getAcceptor().unbind(); // Unbind the server
+            getAcceptor().dispose();
         }
 
     }
@@ -91,6 +92,35 @@ public abstract class Server extends AbstractNetworkChannel {
 
         serverThread.start(); // Start the server thread
         return this;
+    }
+
+    public CompletableFuture<Boolean> startService(){
+        setState(State.RUNNING);
+        latch = new CountDownLatch(1); // Initialize the latch
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+
+        serverThread = new Thread(() -> {
+            try {
+                System.out.println(Thread.currentThread().getName() + " Started");
+                bind();
+                future.complete(true); // Complete the future successfully
+                latch.await(); // Wait indefinitely until the latch is counted down
+            } catch (IOException e) {
+                Thread.currentThread().interrupt();
+                future.completeExceptionally(e); // Complete with exception
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt(); // Restore interrupted status
+                future.completeExceptionally(e);
+            } finally {
+                System.out.println(Thread.currentThread().getName() + " Stopped");
+                if (latch != null) {
+                    latch.countDown(); // Signal the server to stop
+                }
+            }
+        });
+
+        serverThread.start(); // Start the server thread
+        return future;
     }
 
 

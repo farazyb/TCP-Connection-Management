@@ -56,6 +56,7 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
         this.socketConfiguration = new SocketConfigurationHandler();
         this.ioService = ioService;
         this.statistics = new DefaultStatistics();
+        sessionManager = new SessionManager(60, getConfiguration().isPermanent());
         setDefaultTcpSocketConfiguration(defaultTcpSocketConfiguration);
         setDefaultFilter(ioService);
         applyConfig(ioService);

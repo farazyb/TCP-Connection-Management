@@ -8,10 +8,13 @@ import ir.co.ocs.envoriment.server.TCPServer;
 import ir.co.ocs.managers.ServerManager;
 import ir.co.ocs.socketconfiguration.ServerSocketConfiguration;
 import ir.co.ocs.socketconfiguration.enums.SocketMode;
+import lombok.extern.log4j.Log4j;
 import org.apache.mina.filter.executor.ExecutorFilter;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+@Log4j
 public class TCPServerMain {
 
 
@@ -29,27 +32,19 @@ public class TCPServerMain {
         server.addFilter("executor", new ExecutorFilter(Executors.newFixedThreadPool(4)));
         ServerManager serverManager = new ServerManager();
         serverManager.add(server);
-
-//        try {
-//            TimeUnit.SECONDS.sleep(10);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//            serverManager.stop(server.getIdentification());
-//        try {
-//            TimeUnit.SECONDS.sleep(10);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//        server = new TCPServer(serverSocketConfiguration, new ServerFactory());
-//        server.setHandler(new ServerHandler());
-//        server.addFilter("executor", new ExecutorFilter(Executors.newFixedThreadPool(4)));
-//        serverManager.add(server);
-//        try {
-//            TimeUnit.SECONDS.sleep(10);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+//        timeout();
 //        serverManager.stop(server.getIdentification());
+        timeout();
+        serverManager.restart(server.getIdentification());
+        timeout();
+        serverManager.shutdown();
+    }
+
+    private static void timeout() {
+        try {
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

@@ -10,6 +10,7 @@ public class SocketConfigurationHandler implements SocketConfigurationInterface 
     public void applyConfig(IoAcceptor acceptor, ServerSocketConfiguration config) {
         config.validate();
         IoSessionConfig sessionConfig = acceptor.getSessionConfig();
+        sessionConfig.setWriteTimeout(60);
         sessionConfig.setAll(config);
     }
 

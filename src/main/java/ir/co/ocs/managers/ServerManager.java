@@ -27,19 +27,17 @@ public class ServerManager extends AbstractManager<Server> {
      */
     @Override
     public void startConnection(Server server) {
-        CompletableFuture<Boolean> future = server.startService();
-        future.thenAccept(isBound -> {
-            if (isBound) {
-                log.info("Server " + server.getIdentification() + " Starts Listening on port:" + server.getServerConfig().getPort());
-            }
-        }).exceptionally(e -> {
-            log.info("Server failed to bind: " + e.getMessage());
-            return null;
-        });
-
+        if (!server.isActive()) {
+            throw new IllegalStateException("Cannot start or restart the service because it is stopped.");
+        }
+        server.start();
     }
 
     public void restart(String identificationName) {
+        Server server = services.get(identificationName);
+        if (!server.isActive()) {
+            throw new IllegalStateException("Cannot start or restart the service because it is stopped.");
+        }
         Server networkChannel = remove(identificationName);
         networkChannel.restart();
         add(networkChannel);

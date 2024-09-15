@@ -73,28 +73,42 @@ public abstract class Server extends AbstractNetworkChannel {
 
     @Override
     public Server start() {
-
         setState(State.RUNNING);
         latch = new CountDownLatch(1); // Initialize the latch
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
         serverThread = new Thread(() -> {
             try {
                 System.out.println(Thread.currentThread().getName() + " Started");
                 bind();
+                future.complete(true); // Complete the future successfully
                 latch.await(); // Wait indefinitely until the latch is counted down
             } catch (IOException e) {
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
+                future.completeExceptionally(e); // Complete with exception
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt(); // Restore interrupted status
+                future.completeExceptionally(e);
             } finally {
-                System.out.println(Thread.currentThread().getName() + " Stopped");
+                if (latch != null) {
+                    latch.countDown(); // Signal the server to stop
+                }
             }
+            log.warn(Thread.currentThread().getName() + " Stopped");
         });
 
         serverThread.start(); // Start the server thread
+        future.thenAccept(isBound -> {
+            if (isBound) {
+                log.info("Server " + this.getIdentification() + " Starts Listening on port:" + this.getServerConfig().getPort());
+            }
+        }).exceptionally(e -> {
+            log.error("Server failed to bind: " + e.getMessage());
+            throw new RuntimeException(e);
+        });
         return this;
     }
 
-    public CompletableFuture<Boolean> startService(){
+    public CompletableFuture<Boolean> startService() {
         setState(State.RUNNING);
         latch = new CountDownLatch(1); // Initialize the latch
         CompletableFuture<Boolean> future = new CompletableFuture<>();

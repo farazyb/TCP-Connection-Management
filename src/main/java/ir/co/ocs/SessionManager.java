@@ -11,7 +11,7 @@ public class SessionManager {
     private final ConcurrentHashMap<Long, IoSession> sessions;
     private final Executor executor;
     private final int timeout; // Timeout in seconds
-    private boolean permanent;
+    private final boolean permanent;
 
     public SessionManager(int timeout, boolean permanent) {
         this.sessions = new ConcurrentHashMap<>();

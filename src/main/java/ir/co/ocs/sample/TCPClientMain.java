@@ -11,12 +11,11 @@ import java.util.concurrent.TimeUnit;
 public class TCPClientMain {
     public static void main(String[] args) {
         TCPClient client = getTcpClient();
-        int[] array =new int[]{1,2,3};
-        client.setHandler(new ClientHandler(array));
-        ClientManager clientManager=new ClientManager();
+        client.setHandler(new ClientHandler());
+        ClientManager clientManager = new ClientManager();
 
         clientManager.add(client);
-       timeOut();
+        timeOut();
         clientManager.restart(client.getIdentification());
 
     }

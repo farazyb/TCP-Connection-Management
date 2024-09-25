@@ -1,6 +1,5 @@
 package ir.co.ocs.socketconfiguration;
 
-import ir.co.ocs.Processor;
 import ir.co.ocs.codec.FixedLengthByteArrayFactory;
 import ir.co.ocs.envoriment.networkchannel.SSLManger;
 import ir.co.ocs.messageprotocol.ProtocolMessageFactory;
@@ -64,14 +63,12 @@ public class BaseTcpSocketConfiguration extends DefaultSocketSessionConfig imple
     private HashMap<Object, Object> channelAttribute;//optional if is not set default
     private ProtocolMessageFactory protocolMessageFactory;
     private ProtocolCodecFactory protocolCodecFactory;//optional if is not set default
-    private Processor processor;//mandatory
+   // private Processor processor;//mandatory
     private boolean permanent;
+    private int sessionTimeOut;
 
 
     public BaseTcpSocketConfiguration() {
-        setBothIdleTime(2);
-        setReaderIdleTime(2);
-        setWriterIdleTime(2);
         setKeepAlive(true);
         permanent = true;
         channelAttribute = new HashMap<>();
@@ -88,15 +85,23 @@ public class BaseTcpSocketConfiguration extends DefaultSocketSessionConfig imple
             throw new IllegalArgumentException("Port must be a positive integer.");
         }
 
-        if (processor == null) {
-            //throw new IllegalArgumentException("Processor is mandatory.");
-            //todo check for processor
-        }
+//        if (processor == null) {
+//            //throw new IllegalArgumentException("Processor is mandatory.");
+//            //todo check for processor
+//        }
 
         // Optionally ensure default protocol codec factory if not set
         if (protocolCodecFactory == null) {
             // Set a default value or throw an exception if you prefer strict validation
             this.protocolCodecFactory = new FixedLengthByteArrayFactory();
+        }
+        if (!permanent) {
+            if (sessionTimeOut > 0) {
+                setBothIdleTime(sessionTimeOut);
+            } else {
+                setBothIdleTime(60);
+            }
+
         }
     }
 }

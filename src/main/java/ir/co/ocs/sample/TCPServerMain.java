@@ -25,6 +25,8 @@ public class TCPServerMain {
         serverSocketConfiguration.setReuseAddress(true);
         serverSocketConfiguration.setKeepAlive(true);
         serverSocketConfiguration.setChannelIdentificationName("Test_Server");
+        serverSocketConfiguration.setPermanent(false);
+        serverSocketConfiguration.setSessionTimeOut(60);
 
 
         Server server = new TCPServer(serverSocketConfiguration, new ServerFactory());
@@ -32,12 +34,12 @@ public class TCPServerMain {
         server.addFilter("executor", new ExecutorFilter(Executors.newFixedThreadPool(4)));
         ServerManager serverManager = new ServerManager();
         serverManager.add(server);
+////        timeout();
+////        serverManager.stop(server.getIdentification());
 //        timeout();
-//        serverManager.stop(server.getIdentification());
-        timeout();
-        serverManager.restart(server.getIdentification());
-        timeout();
-        serverManager.shutdown();
+//        serverManager.restart(server.getIdentification());
+//        timeout();
+//        serverManager.shutdown();
     }
 
     private static void timeout() {

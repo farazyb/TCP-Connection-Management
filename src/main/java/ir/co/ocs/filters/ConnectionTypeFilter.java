@@ -17,7 +17,13 @@ public class ConnectionTypeFilter extends IoFilterAdapter {
 
     @Override
     public void messageSent(NextFilter nextFilter, IoSession session, WriteRequest writeRequest) throws Exception {
-        if (!isPermanent) session.closeOnFlush();
+
         super.messageSent(nextFilter, session, writeRequest);
+    }
+
+    @Override
+    public void exceptionCaught(NextFilter nextFilter, IoSession session, Throwable cause) throws Exception {
+
+        super.exceptionCaught(nextFilter, session, cause);
     }
 }

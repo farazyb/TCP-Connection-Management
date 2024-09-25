@@ -7,5 +7,5 @@ public interface SocketConfigurationInterface {
 
     void applyConfig(IoAcceptor acceptor, ServerSocketConfiguration config);
 
-    void applyConfig(IoConnector acceptor,  ClientSocketConfiguration config);
+    void applyConfig(IoConnector acceptor, ClientSocketConfiguration config);
 }

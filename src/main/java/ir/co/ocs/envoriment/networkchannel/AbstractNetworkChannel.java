@@ -37,14 +37,12 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
     protected volatile State state = State.NONE;
     private BaseTcpSocketConfiguration baseTcpSocketConfiguration;
     private final SocketConfigurationInterface socketConfiguration;
-    private SessionManager sessionManager;
 
 
     protected AbstractNetworkChannel(BaseTcpSocketConfiguration defaultTcpSocketConfiguration, IoService ioService, SocketConfigurationInterface socketConfiguration, Statistics statistics) {
         this.socketConfiguration = socketConfiguration;
         this.ioService = ioService;
         this.statistics = statistics;
-        sessionManager = new SessionManager(60, getConfiguration().isPermanent());
         setDefaultTcpSocketConfiguration(defaultTcpSocketConfiguration);
         setDefaultFilter(ioService);
         applyConfig(this.ioService);
@@ -56,7 +54,6 @@ public abstract class AbstractNetworkChannel implements NetworkChannel, FilterMa
         this.socketConfiguration = new SocketConfigurationHandler();
         this.ioService = ioService;
         this.statistics = new DefaultStatistics();
-        sessionManager = new SessionManager(60, getConfiguration().isPermanent());
         setDefaultTcpSocketConfiguration(defaultTcpSocketConfiguration);
         setDefaultFilter(ioService);
         applyConfig(ioService);

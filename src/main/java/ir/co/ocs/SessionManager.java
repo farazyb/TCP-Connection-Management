@@ -12,12 +12,18 @@ public class SessionManager {
     private final Executor executor;
     private final int timeout; // Timeout in seconds
     private final boolean permanent;
+    private final int checkInterval; // Check interval in seconds
 
     public SessionManager(int timeout, boolean permanent) {
+        this(timeout, permanent, 1); // Default check interval of 1 second
+    }
+
+    public SessionManager(int timeout, boolean permanent, int checkInterval) {
         this.sessions = new ConcurrentHashMap<>();
         this.executor = Executors.newCachedThreadPool();
         this.timeout = timeout;
         this.permanent = permanent;
+        this.checkInterval = checkInterval;
         manageTimeout();
     }
 
@@ -41,7 +47,7 @@ public class SessionManager {
         executor.execute(() -> {
             while (true) {
                 try {
-                    TimeUnit.SECONDS.sleep(10); // Check every 10 seconds
+                    TimeUnit.SECONDS.sleep(checkInterval);
                     long currentTime = System.currentTimeMillis();
                     sessions.forEach((id, session) -> {
                         if (!session.isClosing() && session.isConnected()) {

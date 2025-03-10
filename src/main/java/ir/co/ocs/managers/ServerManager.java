@@ -1,9 +1,12 @@
 package ir.co.ocs.managers;
 
+import ir.co.ocs.envoriment.networkchannel.NetworkChannel;
 import ir.co.ocs.envoriment.server.Server;
-import lombok.extern.log4j.Log4j;
 
-import java.util.concurrent.CompletableFuture;
+import org.springframework.stereotype.Component;
+
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * The {@code ServerManager} class is responsible for managing a collection of {@code Server} instances.
@@ -17,31 +20,33 @@ import java.util.concurrent.CompletableFuture;
  *
  * @see AbstractManager
  */
-@Log4j
-public class ServerManager extends AbstractManager<Server> {
+@Component
+public class ServerManager {
+    private final ConcurrentMap<String, Server> servers = new ConcurrentHashMap<>();
+
     /**
-     * Starts the connection process for the specified {@code Server}. This method calls the {@code start()} method
+     * Starts the connection process for the specified {@code Server}. This method calls the {@code startService()} method
      * on the server instance, and logs the server's identification and port number it is listening on.
      *
      * @param server the server to start the connection process for
      */
-    @Override
-    public void startConnection(Server server) {
-        if (!server.isActive()) {
-            throw new IllegalStateException("Cannot start or restart the service because it is stopped.");
+    public void startConnection(NetworkChannel server) {
+        if (server.isActive()) {
+            throw new IllegalStateException("Server is already active");
         }
-        server.start();
+        server.startService();
     }
 
-    public void restart(String identificationName) {
-        Server server = services.get(identificationName);
-        if (!server.isActive()) {
-            throw new IllegalStateException("Cannot start or restart the service because it is stopped.");
+    public void stopConnection(NetworkChannel server) {
+        if (server.isActive()) {
+            server.stop();
         }
-        Server networkChannel = remove(identificationName);
-        networkChannel.restart();
-        add(networkChannel);
+    }
 
+    public void restart(NetworkChannel server) {
+        if (server.isActive()) {
+            server.restart();
+        }
     }
 
     /**
@@ -51,19 +56,12 @@ public class ServerManager extends AbstractManager<Server> {
      *
      * <p>In case of any exceptions during the shutdown process, they are caught and logged.</p>
      */
-    @Override
     public void shutdown() {
-        log.info("Shutting down all servers...");
-        services.forEach((name, server) -> {
-            try {
-                log.info("Shutting down server: " + server.getIdentification());
-                server.stop();  // Stop each server gracefully
-                log.info("Server " + server.getIdentification() + " successfully shut down.");
-            } catch (Exception e) {
-                log.error("Error shutting down server: " + server.getIdentification(), e);
-            }
-        });
-        log.info("All servers shut down successfully.");
+        servers.values().forEach(this::stopConnection);
+        servers.clear();
     }
 
+    public ConcurrentMap<String, Server> getServices() {
+        return servers;
+    }
 }

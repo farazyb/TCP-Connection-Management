@@ -7,6 +7,7 @@ import ir.co.ocs.SessionStore;
 import ir.co.ocs.connections.DataInformation;
 import lombok.extern.log4j.Log4j;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -18,12 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 
-@Log4j
+@Log4j2
 public abstract class NetworkChannelHandler extends IoHandlerAdapter {
     private final SessionStore sessionStore;
 
     public NetworkChannelHandler() {
-        log.info("new Instance of " + this.getClass().getName() + "created");
+        log.info("new Instance of {}created", this.getClass().getName());
         this.sessionStore = SessionStore.getInstance();
     }
 
@@ -40,9 +41,9 @@ public abstract class NetworkChannelHandler extends IoHandlerAdapter {
 
     @Override
     public final void sessionCreated(IoSession session) throws Exception {
-        log.info("ECHO THREAD : {" + Thread.currentThread().getName() + "}");
+        log.info("ECHO THREAD : {{}}", Thread.currentThread().getName());
         log.info("Adding channel attribute");
-        log.info("Session TimeOut : " + session.getConfig().getWriteTimeout());
+        log.info("Session TimeOut : {}", session.getConfig().getWriteTimeout());
     }
 
     @Override

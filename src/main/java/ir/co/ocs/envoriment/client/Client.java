@@ -1,6 +1,5 @@
 package ir.co.ocs.envoriment.client;
 
-
 import ir.co.ocs.envoriment.enums.State;
 import ir.co.ocs.envoriment.networkchannel.AbstractNetworkChannel;
 import ir.co.ocs.envoriment.networkchannel.NetworkChannel;
@@ -10,6 +9,7 @@ import ir.co.ocs.statistics.Statistics;
 import lombok.Getter;
 import org.apache.mina.core.RuntimeIoException;
 import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.service.IoService;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
@@ -18,7 +18,7 @@ import java.net.InetSocketAddress;
 @Getter
 public class Client extends AbstractNetworkChannel {
     private ConnectFuture future;
-    private IoSession session;
+    protected IoSession session;
 
     public Client(ClientSocketConfiguration clientSocketConfiguration, NioSocketConnector connector, SocketConfigurationInterface socketConfiguration, Statistics statistics) {
         super(clientSocketConfiguration, connector, socketConfiguration, statistics);
@@ -29,22 +29,20 @@ public class Client extends AbstractNetworkChannel {
     }
 
     @Override
-    public void addProcessor() {
-
+    protected void doInitialize() throws Exception {
+        // Initialize client-specific resources
     }
 
     @Override
-    public NetworkChannel start() throws RuntimeIoException {
-
+    protected void doStart() throws Exception {
         this.future = getConnector().connect(new InetSocketAddress(getClientConfig().getHost(), getClientConfig().getPort()));
         this.future.awaitUninterruptibly();
         session = future.getSession();
         this.setState(State.RUNNING);
-        return this;
     }
 
     @Override
-    public void stop() {
+    protected void doStop() throws Exception {
         if (session != null && session.isConnected()) {
             session.closeNow();
         }
@@ -52,6 +50,15 @@ public class Client extends AbstractNetworkChannel {
         this.setState(State.STOP);
     }
 
+    @Override
+    public void setDefaultFilter(IoService ioService) {
+        // Implement filter setup
+    }
+
+    @Override
+    public boolean isRunning() {
+        return session != null && session.isConnected();
+    }
 
     @Override
     public NetworkChannel restart() throws RuntimeIoException {
@@ -64,7 +71,6 @@ public class Client extends AbstractNetworkChannel {
         }
     }
 
-
     public NioSocketConnector getConnector() {
         return (NioSocketConnector) ioService;
     }
@@ -72,6 +78,4 @@ public class Client extends AbstractNetworkChannel {
     public ClientSocketConfiguration getClientConfig() {
         return (ClientSocketConfiguration) getConfiguration();
     }
-
-
 }

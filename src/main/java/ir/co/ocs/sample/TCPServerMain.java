@@ -9,12 +9,13 @@ import ir.co.ocs.managers.ServerManager;
 import ir.co.ocs.socketconfiguration.ServerSocketConfiguration;
 import ir.co.ocs.socketconfiguration.enums.SocketMode;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.apache.mina.filter.executor.ExecutorFilter;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-@Log4j
+@Log4j2
 public class TCPServerMain {
 
 
@@ -33,7 +34,7 @@ public class TCPServerMain {
         server.setHandler(new ServerHandler());
         server.addFilter("executor", new ExecutorFilter(Executors.newFixedThreadPool(4)));
         ServerManager serverManager = new ServerManager();
-        serverManager.add(server);
+        serverManager.startConnection(server);
 ////        timeout();
 ////        serverManager.stop(server.getIdentification());
 //        timeout();

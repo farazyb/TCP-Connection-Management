@@ -2,6 +2,8 @@ package ir.co.ocs.managers;
 
 import ir.co.ocs.envoriment.client.Client;
 import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.stereotype.Component;
 
 
 import java.util.concurrent.ExecutorService;
@@ -23,7 +25,8 @@ import java.util.concurrent.TimeUnit;
  * @see AbstractManager
  * @see ConnectionManager
  */
-@Log4j
+@Log4j2
+@Component
 public class ClientManager extends AbstractManager<Client> implements ConnectionManager<Client> {
     private final ExecutorService executorService;
 

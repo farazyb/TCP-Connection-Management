@@ -1,6 +1,7 @@
 package ir.co.ocs.filters;
 
 import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.apache.mina.core.filterchain.IoFilterAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
@@ -13,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-@Log4j
+@Log4j2
 public class SessionStatisticsFilter extends IoFilterAdapter {
     private final AtomicInteger messagesRead = new AtomicInteger();
     private final AtomicInteger messagesWritten = new AtomicInteger();

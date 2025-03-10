@@ -1,12 +1,12 @@
 package ir.co.ocs.managers;
 
 import ir.co.ocs.envoriment.networkchannel.NetworkChannel;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@Log4j
+@Log4j2
 public abstract class AbstractManager<T extends NetworkChannel> implements Manager<T>,Restartable {
     protected final Map<String, T> services;
 
@@ -16,7 +16,7 @@ public abstract class AbstractManager<T extends NetworkChannel> implements Manag
 
     @Override
     public void add(T networkChannel) {
-        String channelName = networkChannel.getConfiguration().getChannelIdentificationName();
+        String channelName = networkChannel.getIdentification();
 
         if (services.containsKey(channelName)) {
             throw new IllegalArgumentException("Service with name '" + channelName + "' already exists.");
@@ -24,7 +24,6 @@ public abstract class AbstractManager<T extends NetworkChannel> implements Manag
 
         services.put(channelName, networkChannel);
         startConnection(networkChannel);
-
     }
 
     @Override

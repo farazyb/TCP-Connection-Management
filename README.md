@@ -27,31 +27,6 @@ A Spring Boot-based TCP connection management system that provides APIs for mana
 - Maven 3.6 or higher
 - Spring Boot 3.2.3
 
-## Project Structure
-
-```
-src/
-├── main/
-│   ├── java/
-│   │   └── ir/
-│   │       └── co/
-│   │           └── ocs/
-│   │               ├── api/
-│   │               │   ├── controller/
-│   │               │   ├── model/
-│   │               │   └── service/
-│   │               └── Application.java
-│   └── resources/
-│       └── application.properties
-└── test/
-    └── java/
-        └── ir/
-            └── co/
-                └── ocs/
-                    └── api/
-                        └── service/
-```
-
 ## Configuration
 
 The application is configured through `application.properties`:
